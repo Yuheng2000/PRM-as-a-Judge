@@ -1,0 +1,3698 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>PRM-as-a-Judge: A Dense Evaluation Paradigm for Fine-Grained Robotic Auditing</title>
+  <meta name="description"
+        content="PRM-as-a-Judge: A dense evaluation paradigm for fine-grained robotic auditing.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      line-height: 1.7;
+    }
+
+    .site-nav {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1.5rem;
+      padding: 1.25rem 1.5rem;
+      max-width: 1180px;
+      margin: 0 auto;
+      border-bottom: 1px solid #e8e8e8;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(250, 250, 250, 0.94);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+    }
+
+    .site-nav a {
+      color: #666;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .site-nav a:hover {
+      color: #1a1a1a;
+    }
+
+    .site-nav a.active {
+      color: #1a1a1a;
+      font-weight: 500;
+    }
+
+    .blog-container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 4rem;
+    }
+
+    .blog-layout {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      column-gap: 2.1rem;
+      align-items: start;
+    }
+
+    .blog-toc {
+      position: sticky;
+      top: 1.25rem;
+      align-self: start;
+      max-height: calc(100vh - 2.5rem);
+      overflow: auto;
+      padding-right: 0.4rem;
+    }
+
+    .toc-title {
+      margin: 0 0 0.55rem 0;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #7d7d7d;
+    }
+
+    .toc-nav {
+      margin: 0;
+      padding: 0.35rem 0 0.25rem 0;
+      border-left: 2px solid #e2e2e2;
+    }
+
+    .toc-item {
+      margin: 0;
+      padding: 0;
+    }
+
+    .toc-link {
+      display: block;
+      text-decoration: none;
+      color: #6a6a6a;
+      font-size: 0.83rem;
+      line-height: 1.35;
+      padding: 0.24rem 0 0.24rem 0.7rem;
+      border-left: 2px solid transparent;
+      margin-left: -2px;
+      transition: color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .toc-link:hover {
+      color: #2f2f2f;
+    }
+
+    .toc-link.active {
+      color: #1d1d1d;
+      border-left-color: #a3a3a3;
+      font-weight: 600;
+    }
+
+    .toc-link-h3 {
+      font-size: 0.79rem;
+      padding-left: 1.25rem;
+      color: #7a7a7a;
+    }
+
+    .blog-main {
+      max-width: 830px;
+      min-width: 0;
+      --card-radius: 10px;
+      --card-border: #dfe5ee;
+      --card-shadow: 0 1px 2px rgba(23, 35, 56, 0.04);
+    }
+
+    .blog-hero {
+      max-width: 820px;
+      margin-bottom: 1.45rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e2e7ee;
+    }
+
+    .hero-eyebrow {
+      margin: 0 0 0.35rem 0;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: 1.96rem;
+      line-height: 1.2;
+      font-weight: 700;
+      color: #1a1a1a;
+      max-width: none;
+    }
+
+    .hero-title-with-logo {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.14rem;
+    }
+
+    .hero-title-logo {
+      height: 2.9rem;
+      width: auto;
+      flex-shrink: 0;
+      transform: translateY(-0.16rem);
+      margin-right: -0.34rem;
+    }
+
+    .hero-subtitle {
+      margin: 0.62rem 0 0.85rem 0;
+      color: #555;
+      font-size: 0.98rem;
+      max-width: 39rem;
+      line-height: 1.56;
+    }
+
+    .metadata-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.22rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid #dfdfdf;
+      background: #f8f8f8;
+      color: #444;
+      font-size: 0.86rem;
+      text-decoration: none;
+    }
+
+    .meta-chip .chip-key {
+      color: #777;
+      font-weight: 600;
+    }
+
+    .meta-chip .chip-value {
+      color: #333;
+      font-weight: 500;
+    }
+
+    .meta-chip.chip-link:hover {
+      border-color: #c9c9c9;
+      color: #1a1a1a;
+    }
+
+    .hero-cta-links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.44rem;
+      margin-bottom: 0.88rem;
+    }
+
+    .hero-cta-links .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.42rem 0.72rem;
+      border-radius: 8px;
+      border: 1px solid #d7deea;
+      background: #fff;
+      color: #33425a;
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 600;
+      line-height: 1;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .hero-cta-links .hero-cta:hover {
+      background: #f3f6fb;
+      border-color: #c8d3e3;
+      color: #27364f;
+    }
+
+    .hero-cta-links .hero-cta.hero-cta-primary {
+      background: #2f5fa7;
+      border-color: #2f5fa7;
+      color: #fff;
+    }
+
+    .hero-cta-links .hero-cta.hero-cta-primary:hover {
+      background: #274f8c;
+      border-color: #274f8c;
+      color: #fff;
+    }
+
+    .hero-cta-links .hero-cta.hero-cta-secondary {
+      background: #fff;
+    }
+
+    .hero-cta-sep {
+      color: #b0b0b0;
+      font-size: 0.88rem;
+      user-select: none;
+    }
+
+    .tldr-card {
+      border: 1px solid #d9e0ea;
+      border-left: 3px solid #b7c3d6;
+      border-radius: 10px;
+      background: #fcfdff;
+      box-shadow: 0 1px 2px rgba(23, 35, 56, 0.05);
+      padding: 0.72rem 0.86rem;
+      color: #3d4655;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .tldr-card .tldr-label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 700;
+      color: #333;
+      letter-spacing: 0.02em;
+    }
+
+    .tldr-card p {
+      display: block;
+      margin: 0;
+    }
+
+    .blog-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .blog-title {
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: 1.85rem;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 1rem;
+    }
+
+    .title-with-logo {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.1rem;
+    }
+
+    .title-logo {
+      height: 3.2rem;
+      width: auto;
+      flex-shrink: 0;
+      transform: translateY(-0.3rem);
+      margin-right: -0.55rem;
+    }
+
+    .title-text {
+      display: block;
+    }
+
+    .blog-meta {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .blog-meta a {
+      color: #666;
+      text-decoration: none;
+    }
+
+    .blog-meta a:hover {
+      color: #333;
+      text-decoration: underline;
+    }
+
+    .blog-meta .icon {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 0.35rem;
+      vertical-align: middle;
+    }
+
+    .blog-byline {
+      font-size: 1rem;
+      color: #666;
+    }
+
+    .meta-card {
+      margin-top: 0.2rem;
+      padding: 0.55rem 0 0.45rem 0.95rem;
+      border-left: 3px solid #cfcfcf;
+      background: transparent;
+      font-size: 0.95rem;
+    }
+
+    .meta-row {
+      display: grid;
+      grid-template-columns: 6.4rem minmax(0, 1fr);
+      column-gap: 0.65rem;
+      align-items: baseline;
+      margin: 0;
+    }
+
+    .meta-row + .meta-row {
+      margin-top: 0.45rem;
+      padding-top: 0.2rem;
+    }
+
+    .meta-label {
+      color: #666;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .meta-value {
+      color: #555;
+      font-style: italic;
+      min-width: 0;
+    }
+
+    .meta-value a {
+      color: #2d63d8;
+      text-decoration: none;
+      font-style: italic;
+    }
+
+    .meta-value a:hover {
+      color: #1d4fbf;
+      text-decoration: underline;
+    }
+
+    .meta-note {
+      color: #666;
+      margin-left: 0.2rem;
+      font-style: italic;
+      font-size: 0.96em;
+    }
+
+    @media (max-width: 640px) {
+      .blog-hero {
+        max-width: none;
+      }
+
+      .hero-title {
+        max-width: none;
+        font-size: 1.78rem;
+      }
+
+      .hero-cta-links .hero-cta {
+        padding: 0.4rem 0.62rem;
+        font-size: 0.8rem;
+      }
+
+      .meta-row {
+        grid-template-columns: 5.5rem minmax(0, 1fr);
+        column-gap: 0.5rem;
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .site-nav {
+        max-width: 860px;
+      }
+
+      .blog-container {
+        max-width: 860px;
+      }
+
+      .blog-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .blog-toc {
+        display: none;
+      }
+
+      .blog-main {
+        max-width: none;
+      }
+    }
+
+    .hero-figure {
+      margin: 0 0 2rem 0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .hero-figure img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .gist-box {
+      background: #f5f5f5;
+      border-left: 4px solid #333;
+      padding: 1.25rem 1.5rem;
+      margin: 2rem 0;
+      font-style: italic;
+      color: #333;
+    }
+
+    .blog-section {
+      font-family: "STIX Two Text", "Times New Roman", Times, serif;
+      text-align: justify;
+    }
+
+    .blog-section h2 {
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-top: 2.22rem;
+      margin-bottom: 0.86rem;
+      color: #1a1a1a;
+      text-align: left;
+      scroll-margin-top: 1rem;
+      line-height: 1.25;
+    }
+
+    .blog-section h3 {
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-top: 1.45rem;
+      margin-bottom: 0.62rem;
+      color: #1a1a1a;
+      text-align: left;
+      scroll-margin-top: 1rem;
+      line-height: 1.3;
+    }
+
+    .blog-section > h2:first-of-type {
+      margin-top: 1.28rem;
+    }
+
+    .blog-section p {
+      margin-bottom: 0.92rem;
+    }
+
+    .blog-section h2.closing-section-heading {
+      margin-top: 1.86rem;
+      padding-top: 0.82rem;
+      border-top: 1px solid #e6ebf3;
+    }
+
+    .blog-section h2.closing-section-heading.conclusion-heading {
+      margin-top: 1.58rem;
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .concluding-note {
+      margin: 0.76rem 0 0.2rem;
+      padding: 0.54rem 0.66rem;
+      border-radius: 10px;
+      border: 1px solid #d8e3f2;
+      background: #f7fbff;
+      color: #41536c;
+      font-size: 0.9rem;
+      line-height: 1.48;
+    }
+
+    .concluding-note strong {
+      color: #2f4666;
+      font-weight: 700;
+    }
+
+    .collab-contact-note {
+      margin: 0.52rem 0 0.2rem;
+      padding: 0.5rem 0.64rem;
+      border: 1px solid #dfe6f2;
+      border-radius: 10px;
+      background: #fbfdff;
+      color: #4a576d;
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+
+    .collab-contact-note a {
+      color: #2f5fa7;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-weight: 600;
+    }
+
+    .collab-contact-note a:hover {
+      color: #244f8c;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.56rem;
+      margin: 0.5rem 0 0.18rem;
+    }
+
+    .team-card {
+      border: 1px solid #dfe5ee;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 1px 1px rgba(23, 35, 56, 0.03);
+      padding: 0.54rem 0.62rem;
+      text-align: left;
+    }
+
+    .team-card h3 {
+      margin: 0 0 0.24rem;
+      font-size: 0.96rem;
+      font-family: "Source Serif 4", Georgia, serif;
+      color: #29374f;
+    }
+
+    .team-note,
+    .team-inline-list {
+      margin: 0;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      color: #5a667b;
+    }
+
+    .team-list {
+      margin: 0.35rem 0 0;
+      padding-left: 1.08rem;
+    }
+
+    .team-list li {
+      margin-bottom: 0.22rem;
+      font-size: 0.84rem;
+      color: #2f3a4b;
+    }
+
+    .team-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .citation-card {
+      margin-top: 0.46rem;
+      border: 1px solid #dfe5ee;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(23, 35, 56, 0.04);
+      overflow: hidden;
+    }
+
+    .citation-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.5rem 0.62rem;
+      border-bottom: 1px solid #e4e9f1;
+      background: #f8fbff;
+    }
+
+    .citation-kind {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #3f4f66;
+      letter-spacing: 0.01em;
+    }
+
+    .citation-copy-btn {
+      border: 1px solid #c9d5e8;
+      border-radius: 8px;
+      background: #fff;
+      color: #2f5fa7;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.26rem 0.58rem;
+      cursor: pointer;
+      line-height: 1.2;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .citation-copy-btn:hover {
+      background: #eef4ff;
+      border-color: #b9cae4;
+      color: #274f8c;
+    }
+
+    .citation-copy-btn.copied {
+      background: #e8f5ec;
+      border-color: #b8dcc2;
+      color: #2f7446;
+    }
+
+    .blog-section .citation-card .citation-block {
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      background: #fff;
+      box-shadow: none;
+      padding: 0.68rem 0.78rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.8rem;
+      line-height: 1.45;
+      color: #33445f;
+      overflow-x: auto;
+    }
+
+    .blog-section .citation-card .citation-block code {
+      font-family: inherit;
+      white-space: pre;
+    }
+
+    .citation-status {
+      margin: 0;
+      padding: 0.36rem 0.72rem 0.5rem;
+      border-top: 1px solid #eef2f7;
+      background: #fcfdff;
+      font-size: 0.75rem;
+      color: #6a768a;
+      line-height: 1.3;
+    }
+
+    @media (max-width: 980px) {
+      .team-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .citation-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .key-takeaway {
+      margin: 0.95rem 0 1.15rem;
+      padding: 0.7rem 0.88rem;
+      border-left: 3px solid #b8c4d7;
+      border-radius: 10px;
+      border: 1px solid #dce3ed;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(23, 35, 56, 0.04);
+      color: #384150;
+      line-height: 1.58;
+    }
+
+    .key-takeaway strong {
+      font-weight: 700;
+      color: #222;
+    }
+
+    .figure-card {
+      margin: 1rem 0 1.24rem;
+      padding: 0.42rem;
+      border: 1px solid #dfe5ee;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(23, 35, 56, 0.04);
+      overflow: hidden;
+    }
+
+    .figure-card.figure-card-tight {
+      padding: 0.32rem;
+    }
+
+    .figure-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #e6ebf3;
+      background: #fff;
+    }
+
+    .figure-card .blog-figcaption,
+    .figure-card .chart-caption,
+    .figure-card .panel-caption {
+      margin-top: 0.4rem;
+      margin-bottom: 0;
+      font-size: 0.78rem;
+      color: #5f6a7b;
+      line-height: 1.38;
+      font-style: normal;
+    }
+
+    .figure-card .figure-note {
+      margin-top: 0.24rem;
+      font-size: 0.74rem;
+      color: #748196;
+      line-height: 1.35;
+    }
+
+    .blog-figure.explainer-figure {
+      width: min(76%, 680px);
+      margin: 1.02rem auto 1.32rem;
+    }
+
+    .blog-figure.explainer-figure img {
+      width: 100%;
+    }
+
+    .blog-figure.explainer-figure .blog-figcaption {
+      text-align: center;
+      margin-top: 0.42rem;
+    }
+
+    .section-lead {
+      margin: 0.35rem 0 0.85rem;
+      font-size: 0.95rem;
+      color: #4a4a4a;
+      line-height: 1.55;
+    }
+
+    .section-lead strong {
+      color: #252525;
+      font-weight: 700;
+    }
+
+    .section-link-note {
+      margin: -0.12rem 0 0.9rem;
+      font-size: 0.9rem;
+      color: #55627a;
+      line-height: 1.5;
+      text-align: left;
+    }
+
+    .section-link-note a {
+      color: #2f5fa7;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-weight: 600;
+    }
+
+    .section-link-note a:hover {
+      color: #274f8c;
+    }
+
+    .blog-figure.core-idea-figure {
+      width: 86%;
+      margin: 0.96rem auto 1.3rem;
+    }
+
+    .blog-figure.core-idea-figure img {
+      width: 100%;
+    }
+
+    .blog-figure.core-idea-figure .blog-figcaption {
+      text-align: center;
+      margin-top: 0.42rem;
+    }
+
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.95rem;
+      margin: 0.88rem 0 1.02rem;
+    }
+
+    .principle-card {
+      border: 1px solid #dfe5ee;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(23, 35, 56, 0.04);
+      padding: 0.82rem 0.92rem;
+      color: #333;
+    }
+
+    .principle-card-title {
+      margin: 0 0 0.45rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1f1f1f;
+      font-family: "Source Serif 4", Georgia, serif;
+    }
+
+    .principle-card p {
+      margin: 0.35rem 0;
+      line-height: 1.6;
+    }
+
+    .equation-card {
+      margin: 0.52rem 0;
+      border: 1px solid #e1e6ee;
+      border-radius: 8px;
+      background: #f9fbff;
+      padding: 0.5rem 0.62rem;
+    }
+
+    .equation-card .formula-block {
+      margin: 0;
+    }
+
+    .equation-card .math-inline {
+      margin: 0;
+      background: #ffffff;
+      border: 1px solid #ececec;
+    }
+
+    .plain-english {
+      margin: 0.45rem 0 0;
+      font-size: 0.88rem;
+      color: #5b677a;
+      line-height: 1.5;
+    }
+
+    .plain-english strong {
+      font-weight: 700;
+      color: #3c4b62;
+    }
+
+    .relation-transition {
+      margin: 0.54rem 0 0.2rem;
+      color: #404d62;
+      font-size: 0.92rem;
+      line-height: 1.52;
+      text-align: left;
+    }
+
+    .relation-formula {
+      margin: 0.02rem 0 0.18rem;
+      width: 100%;
+      text-align: center;
+      display: block;
+    }
+
+    .relation-formula .math-inline {
+      margin: 0 auto;
+      padding: 0.14rem 0.24rem;
+      background: transparent;
+      border: 0;
+      font-size: 0.98em;
+      display: block;
+      width: max-content;
+      max-width: 100%;
+    }
+
+    .relation-formula .katex-display {
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .relation-note {
+      margin: 0 0 1rem;
+      font-size: 0.84rem;
+      color: #5f6d82;
+      line-height: 1.45;
+      text-align: left;
+    }
+
+    .opd-tier-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.82rem;
+      margin: 0.74rem 0 0.9rem;
+      align-items: stretch;
+    }
+
+    .opd-tier-card {
+      border: 1px solid #e2e8f1;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(23, 35, 56, 0.03);
+      padding: 0.82rem 0.88rem 0.86rem;
+      color: #2f3543;
+      text-align: left;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      gap: 0.34rem;
+    }
+
+    .opd-tier-card.tier-outcome {
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 36%);
+    }
+
+    .opd-tier-card.tier-process {
+      background: linear-gradient(180deg, #f7fbf8 0%, #ffffff 36%);
+    }
+
+    .opd-tier-card.tier-diagnosis {
+      background: linear-gradient(180deg, #fffaf7 0%, #ffffff 36%);
+    }
+
+    .opd-tier-title {
+      margin: 0;
+      font-size: 1.03rem;
+      font-weight: 700;
+      color: #222a37;
+      font-family: "Source Serif 4", Georgia, serif;
+      text-align: left;
+    }
+
+    .opd-tier-def {
+      margin: 0;
+      font-size: 0.83rem;
+      color: #4d586d;
+      line-height: 1.48;
+      text-align: left;
+    }
+
+    .opd-tier-question {
+      margin: 0;
+      font-size: 0.79rem;
+      color: #415676;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-align: left;
+    }
+
+    .opd-map-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 0.84rem;
+      margin: 0.74rem 0 0.88rem;
+    }
+
+    .opd-map-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.9fr) minmax(0, 2.1fr);
+      gap: 0.84rem;
+      align-items: stretch;
+    }
+
+    .opd-map-row .opd-tier-card {
+      min-height: 100%;
+      justify-content: center;
+    }
+
+    .opd-row-metrics {
+      display: grid;
+      gap: 0.84rem;
+      align-items: stretch;
+    }
+
+    .opd-row-metrics.metrics-two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .opd-row-metrics.metrics-one {
+      grid-template-columns: 1fr;
+    }
+
+    .opd-metric-card {
+      border: 1px solid #dfe5ee;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(23, 35, 56, 0.03);
+      padding: 0.68rem 0.76rem 0.74rem;
+      color: #2f3543;
+      overflow: visible;
+      text-align: left;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .opd-metric-card::before {
+      content: "";
+      display: block;
+      height: 3px;
+      border-radius: 999px;
+      margin: -0.68rem -0.76rem 0.48rem;
+      background: var(--metric-accent, #8a99b2);
+    }
+
+    .opd-metric-card.metric-outcome {
+      --metric-accent: #5a83c8;
+    }
+
+    .opd-metric-card.metric-process {
+      --metric-accent: #4d9c7a;
+    }
+
+    .opd-metric-card.metric-diagnosis {
+      --metric-accent: #c27b58;
+    }
+
+    .opd-metric-head {
+      margin-bottom: 0.26rem;
+      min-height: 2.2rem;
+    }
+
+    .opd-metric-short {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1f2c43;
+      line-height: 1.1;
+      font-family: "Source Serif 4", Georgia, serif;
+      text-align: left;
+    }
+
+    .opd-metric-full {
+      margin: 0.1rem 0 0;
+      font-size: 0.76rem;
+      color: #68748a;
+      line-height: 1.35;
+      text-align: left;
+      min-height: 2.05em;
+    }
+
+    .opd-metric-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-bottom: 0.34rem;
+      min-height: 1.55rem;
+    }
+
+    .opd-metric-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid #d9e1ec;
+      background: #f8fbff;
+      padding: 0.09rem 0.42rem;
+      font-size: 0.71rem;
+      color: #5b667a;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .opd-metric-card .equation-card {
+      margin: 0.26rem 0 0.36rem;
+      padding: 0.26rem 0.3rem;
+      background: #f8fbff;
+      border-color: #e3e8f1;
+      overflow: visible;
+      min-height: 3.45rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .opd-metric-card .equation-card .math-inline {
+      padding: 0.18rem 0.26rem;
+      font-size: 0.78em;
+      overflow-x: auto;
+      overflow-y: visible;
+      white-space: nowrap;
+      border-color: #e7edf6;
+      background: #fbfdff;
+      text-align: center;
+      display: inline-block;
+      max-width: 100%;
+    }
+
+    .opd-metric-card .formula-block {
+      margin: 0;
+      overflow-x: auto;
+      overflow-y: visible;
+      text-align: center;
+      width: 100%;
+    }
+
+    .opd-metric-plain {
+      margin: 0.02rem 0 0;
+      font-size: 0.8rem;
+      line-height: 1.43;
+      color: #516075;
+      text-align: left;
+    }
+
+    .opd-pref-note {
+      margin: 0.02rem 0 0.8rem;
+      font-size: 0.8rem;
+      color: #5a6780;
+      text-align: left;
+    }
+
+    .opd-at-glance {
+      margin: 0.62rem 0 1.08rem;
+      padding: 0.52rem 0.64rem;
+      border: 1px solid #dce5f2;
+      border-radius: 10px;
+      background: #fbfdff;
+    }
+
+    .opd-at-glance-title {
+      margin: 0 0 0.24rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.02em;
+      color: #50607a;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .opd-at-glance-line {
+      margin: 0.16rem 0;
+      font-size: 0.82rem;
+      color: #4a596f;
+      line-height: 1.42;
+    }
+
+    .section6-primary-figure {
+      margin: 0.82rem 0 1.05rem;
+    }
+
+    .section6-primary-figure .blog-figcaption {
+      margin-top: 0.4rem;
+    }
+
+    .section6-process-group {
+      margin: 0.48rem 0 0.58rem;
+      padding: 0.42rem 0.48rem 0.48rem;
+    }
+
+    .section6-process-group-title {
+      margin: 0 0 0.36rem;
+      font-size: 0.82rem;
+      line-height: 1.35;
+      font-weight: 700;
+      color: #3f4f66;
+      letter-spacing: 0.01em;
+      text-align: left;
+    }
+
+    .section6-process-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.44rem;
+      align-items: stretch;
+      grid-auto-rows: 1fr;
+    }
+
+    .section6-process-panel {
+      margin: 0;
+      border: 1px solid #e3e8f1;
+      border-radius: 9px;
+      background: #fbfcff;
+      padding: 0.18rem;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      align-items: stretch;
+      height: 100%;
+    }
+
+    .section6-process-panel img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 781 / 572;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #eceff4;
+      background: #fff;
+      flex: 1 0 auto;
+    }
+
+    .section6-process-panel.left-view img {
+      object-position: left center;
+    }
+
+    .section6-process-panel.right-view img {
+      object-position: right center;
+    }
+
+    .section6-process-panel .panel-caption {
+      margin: 0.18rem 0 0;
+      font-size: 0.74rem;
+      line-height: 1.3;
+      text-align: center;
+      color: #5b6778;
+      min-height: 1.2em;
+    }
+
+    .section6-process-group .blog-figcaption {
+      margin: 0.36rem 0 0.02rem;
+      font-size: 0.77rem;
+      line-height: 1.36;
+      text-align: center;
+      color: #536175;
+      font-style: normal;
+    }
+
+    .blog-figure.section6-heatmap-figure {
+      width: min(78%, 760px);
+      margin: 0.84rem auto 1.1rem;
+      display: block;
+    }
+
+    .blog-figure.section6-heatmap-figure img {
+      display: block;
+      margin: 0 auto;
+    }
+
+    .blog-figure.section6-heatmap-figure .blog-figcaption {
+      text-align: center;
+      margin: 0.4rem auto 0;
+      max-width: 92%;
+    }
+
+    @media (max-width: 900px) {
+      .blog-figure.explainer-figure {
+        width: 100%;
+      }
+
+      .blog-figure.core-idea-figure {
+        width: 100%;
+      }
+
+      .principles-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .opd-tier-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section6-process-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section6-heatmap-figure {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 1280px) {
+      .opd-map-row {
+        grid-template-columns: minmax(200px, 0.95fr) minmax(0, 2.05fr);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .opd-map-row {
+        grid-template-columns: 1fr;
+      }
+
+      .opd-row-metrics.metrics-two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .opd-row-metrics.metrics-two,
+      .opd-row-metrics.metrics-one {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .blog-section ul {
+      margin: 0.92rem 0 0.96rem 1.5rem;
+    }
+
+    .blog-section li {
+      margin-bottom: 0.44rem;
+    }
+
+    .blog-section .citation-block {
+      background: #f5f5f5;
+      border: 1px solid #e8e8e8;
+      border-radius: 6px;
+      padding: 1rem 1.1rem;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      overflow-x: auto;
+    }
+
+    .blog-section .citation-block code {
+      background: none;
+      padding: 0;
+      color: #333;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .blog-figure {
+      margin: 1rem 0 1.2rem;
+    }
+
+    .blog-figure img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #e3e8f1;
+    }
+
+    .robopulse-imgs img {
+      display: block;
+    }
+
+    .robopulse-imgs {
+      display: grid;
+      gap: 0.32rem;
+    }
+
+    /* RoboPulse section: text left, figure/chart right */
+    .robopulse-side-by-side {
+      display: block;
+      margin: 0.82rem 0 0.92rem;
+    }
+
+    .robopulse-side-by-side::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    .robopulse-side-by-side .robopulse-text-block {
+      min-width: 0;
+    }
+
+    .robopulse-side-by-side .robopulse-text-block > :first-child {
+      margin-top: 0;
+    }
+
+    .robopulse-side-by-side .robopulse-figure-right {
+      float: right;
+      width: min(46%, 468px);
+      margin: 0 0 0.52rem 0.92rem !important;
+      padding: 0.22rem;
+    }
+
+    .robopulse-side-by-side .robopulse-figure-right .robopulse-imgs img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      border: 1px solid #edf2f8;
+      background: #fff;
+    }
+
+    .robopulse-side-by-side .robopulse-figure-right .blog-figcaption {
+      font-size: 0.77rem;
+      margin-top: 0.24rem;
+      line-height: 1.36;
+      font-style: normal;
+      text-align: left;
+    }
+
+    .robopulse-side-by-side .robopulse-chart-right {
+      float: right;
+      width: min(46%, 468px);
+      margin: 0 0 0.52rem 0.92rem;
+      padding: 0.24rem;
+    }
+
+    .robopulse-side-by-side .robopulse-chart-right .chart-caption {
+      font-size: 0.77rem;
+      margin-top: 0.24rem;
+      line-height: 1.35;
+      text-align: left;
+    }
+
+    .robopulse-side-by-side .robopulse-chart-right #robopulse-chart {
+      height: 228px !important;
+    }
+
+    @media (max-width: 768px) {
+      .robopulse-side-by-side {
+        margin-bottom: 0.8rem;
+      }
+      .robopulse-side-by-side .robopulse-figure-right,
+      .robopulse-side-by-side .robopulse-chart-right {
+        float: none;
+        width: 100%;
+        max-width: none;
+        margin: 0 0 0.48rem 0 !important;
+      }
+    }
+
+    .blog-figcaption {
+      font-size: 0.78rem;
+      color: #5f6a7b;
+      margin-top: 0.4rem;
+      margin-bottom: 0;
+      font-style: normal;
+      line-height: 1.38;
+    }
+
+    .math-inline {
+      display: block;
+      text-align: center;
+      margin: 0.35rem 0;
+      overflow-x: auto;
+      padding: 0.5rem 0.75rem;
+      background: #f8f8f8;
+      border-radius: 4px;
+    }
+
+    .math-inline .katex {
+      font-size: 1.05em;
+    }
+
+    .formula-block {
+      margin: 0.35rem 0;
+    }
+
+    .formula-block .math-inline {
+      margin: 0;
+    }
+
+    .blog-section li .formula-block,
+    .blog-section li p {
+      margin-top: 0.35rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .chart-wrapper {
+      margin: 0.94rem 0 1.12rem;
+      padding: 0.42rem;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #dfe5ee;
+      box-shadow: 0 1px 2px rgba(23, 35, 56, 0.04);
+    }
+
+    .chart-wrapper .chart-title {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      font-family: "STIX Two Text", "Times New Roman", serif;
+    }
+
+    .chart-wrapper .chart-caption {
+      margin-top: 0.4rem;
+      font-size: 0.78rem;
+      color: #5f6a7b;
+      text-align: center;
+      line-height: 1.36;
+    }
+
+    .interactive-case {
+      margin: 2rem 0;
+      padding: 1.25rem;
+      background: #fafafa;
+      border-radius: 10px;
+      border: 1px solid #e8e8e8;
+    }
+
+    .interactive-case .video-selectors {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .interactive-case .selector-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      width: 100%;
+    }
+
+    .interactive-case .selector-row-label {
+      font-size: 0.8rem;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .interactive-case .selector-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .interactive-case .selector-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 2px solid var(--btn-color, #5C6BC0);
+      color: var(--btn-color, #5C6BC0);
+      background: transparent;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .interactive-case .selector-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .interactive-case .selector-btn.active {
+      border-width: 3px;
+    }
+
+    .interactive-case .selector-btn-filled,
+    .interactive-case .selector-btn-outline {
+      background: transparent;
+      color: var(--btn-color, #5C6BC0);
+      border: 2px solid var(--btn-color, #5C6BC0);
+    }
+
+    .interactive-case .selector-btn-filled.active,
+    .interactive-case .selector-btn-outline.active {
+      background: transparent;
+      color: var(--btn-color, #5C6BC0);
+      border-color: var(--btn-color, #5C6BC0);
+      border-width: 3px;
+    }
+
+    /* Keep task buttons visually stable: one unified color. */
+    .interactive-case #task-buttons .selector-btn {
+      --btn-color: #5f6f86 !important;
+    }
+
+    .interactive-case .opd-metrics-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      padding: 0.75rem;
+      background: #fff;
+    }
+
+    .interactive-case .opd-metrics-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #e8e8e8;
+      width: 100%;
+      text-align: center;
+    }
+
+    .interactive-case .opd-metrics-wrapper .case-metrics {
+      flex: 1;
+      width: 100%;
+    }
+
+    .interactive-case .opd-metrics-wrapper .metrics-group {
+      align-items: center;
+      text-align: center;
+    }
+
+    .interactive-case .opd-metrics-wrapper .metrics-group-title {
+      text-align: center;
+    }
+
+    .interactive-case .opd-metrics-wrapper .metric-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .interactive-case .opd-metrics-wrapper .metric-mc-row {
+      justify-content: center;
+    }
+
+    .interactive-case .video-metrics-row {
+      display: flex;
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+
+    .interactive-case .video-col {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .interactive-case .metrics-col {
+      flex-shrink: 0;
+      width: 250px;
+      display: flex;
+    }
+
+    .interactive-case .metrics-col .case-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0;
+      flex: 1;
+    }
+
+    .interactive-case .metrics-group {
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 8px;
+      padding: 0.35rem 0.55rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .interactive-case .metrics-group.metrics-group-process {
+      flex: 0.5;
+    }
+
+    .interactive-case .metrics-group-title {
+      font-size: 0.7rem;
+      color: #888;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .interactive-case .metrics-group .metric-card {
+      margin-bottom: 0.25rem;
+      background: transparent;
+      border: none;
+      padding: 0.1rem 0;
+    }
+
+    .interactive-case .metrics-group .metric-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .interactive-case .metrics-group .metric-card .metric-name {
+      margin-bottom: 0.05rem;
+    }
+
+    .interactive-case .metric-mc-row {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      margin-top: 0.1rem;
+    }
+
+    .interactive-case .mc-milestone {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      background: #f0f0f0;
+      color: #888;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .interactive-case .mc-milestone.reached {
+      background: rgba(129, 199, 132, 0.35);
+      color: #2e7d32;
+    }
+
+    @media (max-width: 768px) {
+      .interactive-case .video-metrics-row {
+        flex-direction: column;
+      }
+      .interactive-case .metrics-col {
+        width: 100%;
+      }
+    }
+
+    .interactive-case .video-chart-wrap {
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+      margin: 0 auto;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 3px solid rgba(255,255,255,0.5);
+      transition: border-color 0.15s ease;
+    }
+
+    .interactive-case .case-video {
+      width: 100%;
+      display: block;
+      background: #000;
+      border-radius: 6px;
+    }
+
+    .interactive-case .video-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.75));
+      padding: 0.5rem 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .interactive-case .video-chart-wrap:hover .video-controls {
+      opacity: 1;
+    }
+
+    .interactive-case .video-controls .btn-icon {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .interactive-case .video-controls .progress-wrap {
+      flex: 1;
+      height: 4px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .interactive-case .video-controls .progress-wrap .progress-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: #5C6BC0;
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.05s linear;
+    }
+
+    .interactive-case .video-controls .time-display {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.9);
+      font-variant-numeric: tabular-nums;
+      min-width: 4rem;
+    }
+
+    .interactive-case .video-controls .vol-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .interactive-case .video-controls .vol-wrap .btn-icon {
+      width: 22px;
+      height: 22px;
+      font-size: 0.75rem;
+    }
+
+    .interactive-case .video-controls .vol-wrap input[type="range"] {
+      width: 48px;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255,255,255,0.3);
+      border-radius: 2px;
+    }
+
+    .interactive-case .video-controls .vol-wrap input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .interactive-case .chart-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .interactive-case .case-chart {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      min-height: 200px;
+    }
+
+    .interactive-case .case-slider-wrap {
+      margin-top: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .interactive-case .case-slider-wrap input[type="range"] {
+      flex: 1;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #e0e0e0;
+      border-radius: 3px;
+    }
+
+    .interactive-case .case-slider-wrap input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #5C6BC0;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .interactive-case .case-slider-wrap .time-label {
+      font-size: 0.85rem;
+      color: #666;
+      min-width: 4rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .interactive-case .case-metrics {
+      margin-top: 0;
+    }
+
+    .interactive-case .metric-card {
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 6px;
+      padding: 0.6rem 0.75rem;
+      text-align: center;
+    }
+
+    .interactive-case .metric-card .metric-name {
+      font-size: 0.75rem;
+      color: #666;
+      margin-bottom: 0.2rem;
+    }
+
+    .interactive-case .metric-card .metric-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      font-family: "STIX Two Text", "Times New Roman", serif;
+    }
+
+    /* Productized explorer layout and controls */
+    .interactive-case {
+      margin: 1.44rem 0 1.5rem;
+      padding: 0.74rem;
+      background: linear-gradient(180deg, #f7fafd 0%, #fbfcff 100%);
+      border: 1px solid #d8e1ee;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(23, 35, 56, 0.06);
+    }
+
+    .interactive-case .video-selectors {
+      align-items: stretch;
+      gap: 0.56rem;
+      margin-bottom: 0.76rem;
+    }
+
+    .interactive-case .selector-row {
+      align-items: flex-start;
+      gap: 0.28rem;
+    }
+
+    .interactive-case .selector-row-label {
+      font-size: 0.73rem;
+      color: #687487;
+      letter-spacing: 0.02em;
+      font-weight: 700;
+    }
+
+    .interactive-case .selector-buttons {
+      width: 100%;
+      justify-content: flex-start;
+      gap: 0.3rem;
+    }
+
+    .interactive-case .selector-buttons-benchmark,
+    .interactive-case .selector-buttons-task {
+      padding: 0.22rem;
+      border-radius: 10px;
+      border: 1px solid #dfe5ee;
+      background: #fff;
+    }
+
+    .interactive-case .selector-btn {
+      padding: 0.36rem 0.64rem;
+      border: 1px solid transparent !important;
+      border-radius: 8px;
+      font-size: 0.79rem;
+      font-weight: 600;
+      color: #5e6878;
+      background: transparent;
+      transform: none !important;
+      box-shadow: none !important;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .interactive-case .selector-btn:hover {
+      background: #e8edf5;
+      color: #2d3b52;
+    }
+
+    .interactive-case .selector-buttons-benchmark .selector-btn.active {
+      background: #2f5fa7;
+      color: #fff;
+    }
+
+    .interactive-case .selector-buttons-task .selector-btn.active {
+      background: #dce6f6;
+      color: #1f3f72;
+    }
+
+    .interactive-case .video-metrics-row {
+      display: grid;
+      grid-template-columns: minmax(0, 64fr) minmax(300px, 36fr);
+      gap: 0.58rem;
+      align-items: stretch;
+    }
+
+    .interactive-case .explorer-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.46rem;
+    }
+
+    .interactive-case .explorer-side {
+      width: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.34rem;
+    }
+
+    .interactive-case .video-chart-wrap {
+      min-height: 252px;
+      max-height: 316px;
+      border-radius: 12px;
+      border: 1px solid #d6e0ec;
+      background: #000;
+      box-shadow: 0 1px 2px rgba(23, 35, 56, 0.05);
+    }
+
+    .interactive-case .case-video {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      max-height: 316px;
+      object-fit: contain;
+    }
+
+    .interactive-case .curve-panel {
+      padding: 0.46rem 0.54rem 0.44rem;
+      border-radius: 12px;
+      border: 1px solid #dfe5ee;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(23, 35, 56, 0.05);
+    }
+
+    .interactive-case .curve-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.44rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .interactive-case .curve-title {
+      font-size: 0.82rem;
+      color: #2b3340;
+      font-weight: 700;
+    }
+
+    .interactive-case .curve-status-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.34rem;
+      min-height: 1.2rem;
+    }
+
+    .interactive-case .curve-state-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 1px solid #d7deea;
+      background: #f5f8fd;
+      padding: 0.09rem 0.42rem;
+      font-size: 0.69rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+      white-space: nowrap;
+      color: #5b6779;
+    }
+
+    .interactive-case .curve-state-chip.state-progress {
+      background: #eaf6ee;
+      border-color: #b9dfc3;
+      color: #2f7446;
+    }
+
+    .interactive-case .curve-state-chip.state-regress {
+      background: #fcebeb;
+      border-color: #efc3c3;
+      color: #a33e3e;
+    }
+
+    .interactive-case .curve-state-chip.state-stall {
+      background: #faf5e7;
+      border-color: #e8dcb8;
+      color: #866c2e;
+    }
+
+    .interactive-case .curve-status {
+      font-size: 0.74rem;
+      color: #5e6879;
+      font-weight: 600;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .interactive-case .curve-status.state-progress {
+      color: #2f7b48;
+    }
+
+    .interactive-case .curve-status.state-regress {
+      color: #b84343;
+    }
+
+    .interactive-case .curve-status.state-stall {
+      color: #7e6a33;
+    }
+
+    .interactive-case .case-chart {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      height: 236px;
+      min-height: 236px;
+    }
+
+    .interactive-case .curve-panel .case-slider-wrap {
+      margin-top: 0.14rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.16rem;
+      padding: 0.2rem 0 0;
+      border-top: 1px solid #e3e8f1;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      border-left: 0;
+      border-right: 0;
+      border-bottom: 0;
+    }
+
+    .interactive-case .curve-panel .case-slider-wrap input[type="range"] {
+      width: 100%;
+      display: block;
+      align-self: stretch;
+      height: 7px;
+      background: linear-gradient(90deg, #cad7ec, #dae4f5);
+      border-radius: 999px;
+      margin: 0;
+    }
+
+    .interactive-case .curve-panel .case-slider-wrap input[type="range"]::-webkit-slider-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #2f5fa7;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px rgba(47, 95, 167, 0.35);
+    }
+
+    .interactive-case .timeline-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.34rem;
+      line-height: 1;
+    }
+
+    .interactive-case .time-label {
+      min-width: auto;
+      font-size: 0.78rem;
+      color: #5e6878;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .interactive-case .timeline-sep {
+      font-size: 0.68rem;
+      color: #9aa5b7;
+      line-height: 1;
+    }
+
+    .interactive-case .timeline-percent {
+      font-size: 0.78rem;
+      color: #2f5fa7;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .interactive-case .curve-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem 0.6rem;
+      margin-top: 0.22rem;
+      font-size: 0.73rem;
+      color: #5f6878;
+    }
+
+    .interactive-case .curve-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .interactive-case .curve-line {
+      width: 14px;
+      height: 2px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .interactive-case .curve-line-rise {
+      background: rgba(72, 152, 94, 0.95);
+    }
+
+    .interactive-case .curve-line-fall {
+      background: rgba(210, 79, 79, 0.95);
+    }
+
+    .interactive-case .curve-line-stall {
+      background: linear-gradient(90deg, #aa9b6a 0 45%, transparent 45% 55%, #aa9b6a 55% 100%);
+    }
+
+    .interactive-case .curve-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      background: #304a73;
+    }
+
+    .interactive-case .opd-metrics-wrapper,
+    .interactive-case .side-card {
+      border: 1px solid #dfe5ee;
+      border-radius: 11px;
+      padding: 0.42rem 0.5rem;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(23, 35, 56, 0.05);
+    }
+
+    .interactive-case .opd-metrics-wrapper {
+      align-items: stretch;
+      text-align: left;
+    }
+
+    .interactive-case .opd-metrics-title,
+    .interactive-case .side-card-title {
+      margin: 0 0 0.28rem;
+      padding: 0;
+      border: 0;
+      font-size: 0.78rem;
+      color: #3e4a5f;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      text-align: left;
+    }
+
+    .interactive-case .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.24rem;
+    }
+
+    .interactive-case .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+      border-radius: 7px;
+      background: #f7faff;
+      border: 1px solid #e3e8f1;
+      padding: 0.24rem 0.34rem;
+      font-size: 0.75rem;
+    }
+
+    .interactive-case .summary-item:first-child {
+      grid-column: span 2;
+      background: #eef4ff;
+      border-color: #d8e4f7;
+    }
+
+    .interactive-case .summary-key {
+      color: #637086;
+      font-weight: 600;
+    }
+
+    .interactive-case .summary-value {
+      color: #1f2f47;
+      font-weight: 700;
+      font-family: "STIX Two Text", "Times New Roman", serif;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .interactive-case .summary-note {
+      margin: 0.26rem 0 0;
+      font-size: 0.73rem;
+      line-height: 1.33;
+      color: #66758b;
+    }
+
+    .interactive-case .metric-mc-row {
+      gap: 0.25rem;
+      margin-top: 0;
+    }
+
+    .interactive-case .mc-milestone {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.34rem;
+      border-radius: 999px;
+      border: 1px solid #d7dde7;
+      background: #f6f8fb;
+      color: #7a8494;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .interactive-case .mc-milestone.reached {
+      border-color: #8fc2a1;
+      background: #eaf6ee;
+      color: #2f7446;
+    }
+
+    .interactive-case .state-line {
+      margin: 0.18rem 0 0;
+      font-size: 0.74rem;
+      line-height: 1.32;
+      color: #3e4a5f;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .interactive-case .state-line.state-diagnosis {
+      color: #60708b;
+    }
+
+    .interactive-case .legend-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.24rem;
+    }
+
+    .interactive-case .milestone-legend-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.26rem;
+    }
+
+    .interactive-case .side-card-divider {
+      height: 1px;
+      border: 0;
+      margin: 0.02rem 0;
+      background: #e8edf5;
+    }
+
+    .interactive-case .legend-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid #d9e1ec;
+      background: #f8fbff;
+      padding: 0.11rem 0.42rem;
+      font-size: 0.71rem;
+      line-height: 1.22;
+      color: #5b6778;
+      font-weight: 600;
+    }
+
+    .interactive-case .legend-chip-up {
+      background: #eef7f1;
+      border-color: #d4eadc;
+      color: #316f46;
+    }
+
+    .interactive-case .legend-chip-down {
+      background: #f8f2ec;
+      border-color: #e9dacb;
+      color: #835a3e;
+    }
+
+    @media (max-width: 980px) {
+      .interactive-case .video-metrics-row {
+        grid-template-columns: 1fr;
+      }
+
+      .interactive-case .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .interactive-case .summary-item:first-child {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .interactive-case {
+        padding: 0.68rem;
+      }
+
+      .interactive-case .case-chart {
+        height: 210px;
+        min-height: 210px;
+      }
+
+      .interactive-case .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .interactive-case .summary-item:first-child {
+        grid-column: span 2;
+      }
+    }
+
+    .link-block {
+      margin-right: 1rem;
+      display: inline-block;
+    }
+
+    .button.is-outlined {
+      border-color: #333;
+      color: #333;
+    }
+
+    .button.is-outlined:hover {
+      background: #333;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="site-nav">
+    <a href="index.html">Home</a>
+    <a href="blog.html" class="active">Blog</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </nav>
+
+  <article class="blog-container">
+    <div class="blog-layout">
+      <aside class="blog-toc" aria-label="Section navigation">
+        <p class="toc-title">PRM-as-a-Judge</p>
+        <nav class="toc-nav" id="toc-nav"></nav>
+      </aside>
+
+      <div class="blog-main">
+        <header class="blog-hero">
+          <p class="hero-eyebrow">PRM-as-a-Judge</p>
+          <h1 class="hero-title hero-title-with-logo">
+            <img src="assets/images/logo-clip.png" alt="PRM-as-a-Judge" class="hero-title-logo">
+            <span>A Dense Evaluation Paradigm for Fine-Grained Robotic Auditing</span>
+          </h1>
+          <p class="hero-subtitle">A dense evaluation paradigm that turns trajectory videos into interpretable signals for progress depth, execution quality, and failure mechanisms in long-horizon robotics.</p>
+
+          <div class="metadata-chips" aria-label="Publication metadata">
+            <span class="meta-chip"><span class="chip-key">Published</span><span class="chip-value">March 23, 2026</span></span>
+            <a class="meta-chip chip-link" href="https://arxiv.org/abs/2603.21669" target="_blank" rel="noopener noreferrer"><span class="chip-key">Report</span><span class="chip-value">2603.21669</span></a>
+            <a class="meta-chip chip-link" href="https://prm-as-a-judge.github.io/" target="_blank" rel="noopener noreferrer"><span class="chip-key">Repository</span><span class="chip-value">PRM-as-a-Judge</span></a>
+            <span class="meta-chip"><span class="chip-key">By</span><span class="chip-value">PRM-as-a-Judge Team</span></span>
+          </div>
+
+          <div class="hero-cta-links" aria-label="Primary actions">
+            <a class="hero-cta hero-cta-primary" href="https://arxiv.org/abs/2603.21669" target="_blank" rel="noopener noreferrer">Read paper</a>
+            <a class="hero-cta hero-cta-secondary" href="#interactive-trajectory-explorer">Jump to explorer</a>
+            <a class="hero-cta hero-cta-secondary" href="https://prm-as-a-judge.github.io/" target="_blank" rel="noopener noreferrer">View code</a>
+          </div>
+
+          <div class="tldr-card">
+            <span class="tldr-label">TL;DR</span>
+            <p>Binary success rate hides where a policy actually progressed and how it failed. PRM-as-a-Judge converts rollout videos into dense OPD signals that expose progression depth, execution quality, and failure mechanisms. This makes model comparison and diagnosis more transparent, actionable, and reproducible.</p>
+          </div>
+        </header>
+
+        <div class="blog-section content">
+      <h2>1. Why Success Rate is No Longer the Full Story</h2>
+      <p>
+        As robotic manipulation graduates from simple "pick-and-place" to complex, contact-rich marathons, relying solely on Success Rate is like trying to judge a symphony by its final note. It's a classic case of throwing the baby out with the bathwater.
+      </p>
+      <p>
+        The "Success/Failure" binary creates two massive blind spots. First, there is a resolution gap: near-complete failures and early collapses are both flattened to zero, even though they reveal very different policy maturity. Second, there is diagnostic opacity: a nominal "success" can still hide instability, regressions, and excessive trial-and-error.
+      </p>
+      <div class="key-takeaway">
+        <strong>Key Takeaway:</strong> Success rate answers "Did it finish?" but not "How far did it get, how well did it execute, and where did it break?" Dense auditing is needed for actionable model diagnosis.
+      </div>
+
+      <figure class="blog-figure explainer-figure figure-card figure-card-tight">
+        <img src="assets/images/figure1.png" alt="Same label, different reality">
+        <figcaption class="blog-figcaption">
+          The same binary label can hide very different progress depth and execution quality.
+        </figcaption>
+      </figure>
+
+      <h2>2. From Outcome to Audit</h2>
+      <p>
+        To recover the information lost in binary labels, we shift our focus from the finish line to the entire race. For long-horizon tasks, the real difference between models lies in how deep they get into a task, how stable they stay, and exactly where they fail. In the real world, we don't have "privileged" data like exact object positions or contact forces given by simulators.
+      </p>
+      <p>
+        Our solution is to use the evolution of visual states as a proxy for physical progress. We assign a task-conditioned progress potential Φ(s)∈[0,1] to every state. This turns a simple video into a continuous progress curve that we can compare, break down, and diagnose.
+      </p>
+      <p class="section-lead"><strong>Core idea:</strong> map visual state evolution into a task-conditioned progress potential.</p>
+
+      <figure class="blog-figure core-idea-figure figure-card figure-card-tight">
+        <img src="assets/images/figure2.png" alt="What makes a model a qualified judge">
+        <figcaption class="blog-figcaption">
+          We map task-conditioned visual state evolution to a progress potential Φ, then derive OPD metrics for comparable and diagnosable trajectory auditing.
+        </figcaption>
+      </figure>
+
+      <h2>3. What Makes a Model a Qualified Judge?</h2>
+      <p>
+        We represent an execution as an information-state trajectory τ = (x<sub>0</sub>, x<sub>1</sub>, ..., x<sub>T</sub>), where x<sub>t</sub> is the task-relevant information available to the judge at time t. For a fixed instruction, we assume a progress potential Φ(x<sub>t</sub>) in [0, 1] toward completion.
+      </p>
+      <p>A valid dense evaluator should satisfy two properties simultaneously: macro-consistency for additive, path-independent aggregation, and micro-resolution for distinguishing fine-grained task-relevant state changes.</p>
+      <div class="principles-grid">
+        <article class="principle-card">
+          <p class="principle-card-title">Macro-Consistency via Temporal Additivity</p>
+          <p>Progress measured on a long segment should match the sum of progress measured on its subsegments.</p>
+          <div class="equation-card">
+            <p class="formula-block"><span class="math-inline math-latex" data-latex="S(x_{t_0},x_{t_2})=S(x_{t_0},x_{t_1})+S(x_{t_1},x_{t_2})"></span></p>
+          </div>
+          <p class="plain-english"><strong>In practice:</strong> episode-level progress should not change when we re-partition the same trajectory in time.</p>
+        </article>
+        <article class="principle-card">
+          <p class="principle-card-title">Micro-Resolution of Progress Signals</p>
+          <p>Nearby states with meaningful physical differences should induce non-degenerate progress differences.</p>
+          <div class="equation-card">
+            <p class="formula-block"><span class="math-inline math-latex" data-latex="\left|\Phi(x_{t+\Delta})-\Phi(x_t)\right|>0"></span></p>
+          </div>
+          <p class="plain-english"><strong>In practice:</strong> the judge should separate subtle gains, regressions, and stagnation, instead of collapsing them into near-constant scores.</p>
+        </article>
+      </div>
+      <p class="relation-transition">To make macro-consistency and micro-resolution compatible, we define pairwise progress on one shared potential scale:</p>
+      <p class="relation-formula formula-block"><span class="math-inline math-latex" data-latex="S(x_i,x_j)=\Phi(x_j)-\Phi(x_i)"></span></p>
+      <p class="relation-note"><strong>Interpretation:</strong> one scalar reference keeps long-horizon additivity and frame-level sensitivity coherent in the same evaluator.</p>
+
+      <h2>4. OPD: Deconstructing a Single Execution into Three-Tier Signals</h2>
+      <p>
+        Building on the progress potential Φ, we construct OPD (Outcome-Process-Diagnosis) to decompose one execution into interpretable auditing signals at three complementary levels.
+      </p>
+      <div class="opd-map-layout">
+        <div class="opd-map-row">
+          <article class="opd-tier-card tier-outcome">
+            <p class="opd-tier-title">Outcome</p>
+            <p class="opd-tier-question">How far did it get?</p>
+            <p class="opd-tier-def">Outcome summarizes progression depth toward task completion.</p>
+          </article>
+          <div class="opd-row-metrics metrics-two">
+            <article class="opd-metric-card metric-outcome">
+              <div class="opd-metric-head">
+                <p class="opd-metric-short">MC</p>
+                <p class="opd-metric-full">Milestone Coverage</p>
+              </div>
+              <div class="opd-metric-meta">
+                <span class="opd-metric-badge">Outcome</span>
+                <span class="opd-metric-badge">Higher is better ↑</span>
+              </div>
+              <div class="equation-card">
+                <p class="formula-block"><span class="math-inline math-latex" data-latex="MC(\tau)=\max\{q\in\{0,0.25,0.5,0.75,1\}\mid\exists t,\Phi(x_t)\geq q\}"></span></p>
+              </div>
+              <p class="opd-metric-plain">Furthest milestone reached along the execution trajectory.</p>
+            </article>
+            <article class="opd-metric-card metric-outcome">
+              <div class="opd-metric-head">
+                <p class="opd-metric-short">MP</p>
+                <p class="opd-metric-full">Max Progress</p>
+              </div>
+              <div class="opd-metric-meta">
+                <span class="opd-metric-badge">Outcome</span>
+                <span class="opd-metric-badge">Higher is better ↑</span>
+              </div>
+              <div class="equation-card">
+                <p class="formula-block"><span class="math-inline math-latex" data-latex="MP(\tau)=\max_{t\in[0,T]}\Phi(x_t)"></span></p>
+              </div>
+              <p class="opd-metric-plain">Highest continuous progress value attained during the episode.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="opd-map-row">
+          <article class="opd-tier-card tier-process">
+            <p class="opd-tier-title">Process</p>
+            <p class="opd-tier-question">How well did it execute?</p>
+            <p class="opd-tier-def">Process evaluates execution quality and trajectory efficiency.</p>
+          </article>
+          <div class="opd-row-metrics metrics-one">
+            <article class="opd-metric-card metric-process">
+              <div class="opd-metric-head">
+                <p class="opd-metric-short">PPL</p>
+                <p class="opd-metric-full">Path-weighted Progress Length</p>
+              </div>
+              <div class="opd-metric-meta">
+                <span class="opd-metric-badge">Process</span>
+                <span class="opd-metric-badge">Higher is better ↑</span>
+              </div>
+              <div class="equation-card">
+                <p class="formula-block"><span class="math-inline math-latex" data-latex="PPL(\tau)=\Phi(x_T)\cdot\frac{\Phi(x_T)-\Phi(x_0)}{\sum_{t=1}^T|\Phi(x_t)-\Phi(x_{t-1})|}"></span></p>
+              </div>
+              <p class="opd-metric-plain">Measures path efficiency: higher values imply smoother, less redundant execution.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="opd-map-row">
+          <article class="opd-tier-card tier-diagnosis">
+            <p class="opd-tier-title">Diagnosis</p>
+            <p class="opd-tier-question">Why did it fail?</p>
+            <p class="opd-tier-def">Diagnosis disentangles failure mechanisms such as regression and stagnation.</p>
+          </article>
+          <div class="opd-row-metrics metrics-two">
+            <article class="opd-metric-card metric-diagnosis">
+              <div class="opd-metric-head">
+                <p class="opd-metric-short">CRA</p>
+                <p class="opd-metric-full">Cumulative Regret Area</p>
+              </div>
+              <div class="opd-metric-meta">
+                <span class="opd-metric-badge">Diagnosis</span>
+                <span class="opd-metric-badge">Lower is better ↓</span>
+              </div>
+              <div class="equation-card">
+                <p class="formula-block"><span class="math-inline math-latex" data-latex="CRA(\tau)=\frac{1}{T+1}\sum_{t=0}^T\max(0,\max_{k\leq t}\Phi(x_k)-\Phi(x_t))"></span></p>
+              </div>
+              <p class="opd-metric-plain">Quantifies regression severity and duration after reaching better states.</p>
+            </article>
+            <article class="opd-metric-card metric-diagnosis">
+              <div class="opd-metric-head">
+                <p class="opd-metric-short">STR</p>
+                <p class="opd-metric-full">Stagnation Ratio</p>
+              </div>
+              <div class="opd-metric-meta">
+                <span class="opd-metric-badge">Diagnosis</span>
+                <span class="opd-metric-badge">Lower is better ↓</span>
+              </div>
+              <div class="equation-card">
+                <p class="formula-block"><span class="math-inline math-latex" data-latex="STR(\tau)=\frac{1}{T}\sum_{t=1}^T\mathbf{1}(|\Phi(x_t)-\Phi(x_{t-1})|&lt;\varepsilon)"></span></p>
+              </div>
+              <p class="opd-metric-plain">Fraction of steps with negligible task-relevant progress change.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+      <p class="opd-pref-note"><strong>Reading guide:</strong> OPD is a 3-layer framework, operationalized by 5 peer metrics (MC, MP, PPL, CRA, STR).</p>
+      <div class="opd-at-glance">
+        <p class="opd-at-glance-title">At a glance</p>
+        <p class="opd-at-glance-line"><strong>Outcome:</strong> MC and MP quantify how far execution reaches and its peak progress state.</p>
+        <p class="opd-at-glance-line"><strong>Process:</strong> PPL measures whether progress is achieved with efficient, non-redundant motion.</p>
+        <p class="opd-at-glance-line"><strong>Diagnosis:</strong> CRA and STR separate regression-heavy failures from stagnation-heavy failures.</p>
+      </div>
+      <p>
+        Together, these five metrics answer five practical questions: how far it reached, its peak capability, path efficiency, regression severity, and stagnation duration.
+      </p>
+
+      <h2>5. RoboPulse: The "Physical Microscope" for Evaluator Verification</h2>
+      <div class="robopulse-side-by-side">
+        <figure class="blog-figure robopulse-figure-right figure-card figure-card-tight">
+          <div class="robopulse-imgs">
+            <img src="assets/images/robopulse1.png" alt="RoboPulse benchmark">
+            <img src="assets/images/robopulse2.png" alt="RoboPulse structure">
+          </div>
+          <figcaption class="blog-figcaption">
+            RoboPulse spans diverse domains and progress scales for microscopic evaluator stress testing.
+          </figcaption>
+        </figure>
+        <div class="robopulse-text-block">
+          <p>
+            To verify whether an evaluator possesses true microscopic resolution, we constructed the RoboPulse benchmark. It simplifies evaluation into a pairwise judgment task: given a task description and two states from the same trajectory, the evaluator must determine if the latter state represents "Progress" or "Regression." This design bypasses the need for absolute progress labeling and focuses on the core capability: can the evaluator reliably distinguish directionality when physical changes are minute?
+          </p>
+        <ul>
+          <li><strong>Dataset Scale:</strong> RoboPulse comprises 1,800 pairwise judgment samples derived from 1,622 episodes across 816 tasks.</li>
+          <li><strong>Diversity:</strong> Data sources include real-world robots, simulations, UMI, and human first-person perspectives.</li>
+          <li><strong>Granularity:</strong> Samples are categorized into Small / Medium / Large relative progress spans to systematically test the evaluator's physical resolution across different scales.</li>
+        </ul>
+        </div>
+      </div>
+      <p><strong>Experimental Results:</strong></p>
+      <div class="robopulse-side-by-side">
+        <div class="chart-wrapper robopulse-chart-right figure-card figure-card-tight">
+          <div id="robopulse-chart" style="width:100%; height:280px;"></div>
+          <p class="chart-caption">PRM-based judges dominate all spans, with the largest gap on Small-hop cases.</p>
+        </div>
+        <div class="robopulse-text-block">
+          <p>
+            Evaluators based on PRM (Process Reward Models) demonstrate an overwhelming advantage. Taking Robo-Dopamine as an example, it achieves an overall accuracy of 0.83, maintaining 0.80 even in the most challenging "Small-hop" interval.
+          </p>
+          <p>
+            In contrast, general large models like Gemini and Qwen3-VL-8B only reach overall accuracies of 0.66 and 0.59, respectively. On "Small-hop" judgments, Gemini and GPT-5.2 perform at 0.54 and 0.47—nearly equivalent to random guessing. This proves that the core strength of PRM lies not in coarse semantic understanding, but in the acute capture of the physical evolution process. Once a judge possesses verifiable microscopic resolution, it can be further applied to the systematic analysis of real-world policy trajectories.
+          </p>
+        </div>
+      </div>
+
+      <h2>6. Dense Trajectory Auditing Reveals Strategic Discrepancies</h2>
+      <p>
+        After constructing and verifying our judge, we applied PRM-as-a-Judge to a systematic audit of real-world policy trajectories. Specifically, we selected 7 manipulation tasks with distinct long-horizon features from RoboTwin 2.0 and performed a unified evaluation of 5 representative baseline policies.
+      </p>
+      <p>
+        By leveraging the trajectory-level signals provided by OPD, we move beyond simply comparing "whether a model completed a task" to a systematic analysis of progression depth, success quality, and failure mechanisms.
+      </p>
+      <p class="section-link-note">
+        For continuously updated rankings and task-level comparisons, see the <a href="leaderboard.html">Leaderboard</a>.
+      </p>
+
+      <h3>6.1 Phased Reachability and Failure Localization</h3>
+      <p>
+        A 0% success rate doesn't mean a policy learned nothing—it just fails to tell you where things fell apart. By tracking how deep a model actually pushes into a long-horizon task (using our MC and MP metrics), we can peek under the hood and uncover two strategic realities that binary labels hide:
+      </p>
+      <ul>
+        <li><strong>The "Last-Mile" Illusion:</strong> Policies rarely fail from the starting line. In Blocks Ranking RGB, almost every baseline breezes through the early stages with massive reachability (MC@25 &gt; 84). Yet, when it comes to actually closing the deal (MC@100), performance plummets to near zero. They aren't failing to learn the task; they are specifically tripping at the finish line.</li>
+        <li><strong>Not All Zeros Are Created Equal:</strong> A near-miss and an early breakdown both score a flat 0%, but physically, they are completely different. Dense auditing finally separates models that "fail the same way" from those that "fail at different locations." Even though both ultimately drop the ball, π<sub>0</sub> fights its way much closer to the goal (MC@75 = 40), whereas OpenVLA-OFT falls apart almost immediately (MC@75 = 6).</li>
+      </ul>
+      <figure class="blog-figure section6-primary-figure figure-card figure-card-tight">
+        <img src="assets/images/Outcome.png" alt="Outcome layer metrics">
+        <figcaption class="blog-figcaption">Phased reachability reveals the "last-mile" gap and separates early collapse from near-complete failure.</figcaption>
+      </figure>
+
+      <h3>6.2 Execution Quality Under Success Conditions</h3>
+      <p>
+        A "success" tag tells you nothing about execution quality—binary results hide whether a task was done smoothly, efficiently, or through messy trial and error. By measuring process and diagnosis metrics only on successful runs, we uncover two key truths buried by simple success rates:
+      </p>
+      <ul>
+        <li><strong>Success ≠ High Quality:</strong> Even when policies succeed, their performance varies sharply. In Handover Mic, DP delivers near-perfect execution: success-conditioned PPL = 94.9, CRA = 0.26. OpenVLA‑OFT, by contrast, shows CRA = 2.55—its successes rely on repeated corrections and unstable adjustments.</li>
+        <li><strong>The Precision–Reliability Gap:</strong> Top-tier execution doesn't mean consistent reliability. DP achieves elite quality when it succeeds, but its overall success rate hits only 44%. Some policies excel at clean, precise wins—but cannot sustain that quality across all rollouts.</li>
+      </ul>
+      <p>
+        Our OPD metrics go beyond "success/failure" to separate smooth, high‑quality successes from inefficient, janky ones—revealing tradeoffs that shape real‑world robot performance.
+      </p>
+      <figure class="section6-process-group figure-card">
+        <div class="section6-process-group-title">Two complementary views of success-conditioned execution quality.</div>
+        <div class="section6-process-grid">
+          <div class="section6-process-panel left-view">
+            <img src="assets/images/Process.png" alt="Success-conditioned efficiency-focused view">
+            <p class="panel-caption">Efficiency view.</p>
+          </div>
+          <div class="section6-process-panel right-view">
+            <img src="assets/images/Process.png" alt="Success-conditioned regression and stability view">
+            <p class="panel-caption">Stability and regret view.</p>
+          </div>
+        </div>
+        <figcaption class="blog-figcaption">Together, these views show why success quality and success reliability can diverge.</figcaption>
+      </figure>
+
+      <h3>6.3 Failure Mechanisms and Strategy Fingerprinting</h3>
+      <p>
+        A single "failure" label reveals nothing about why policies fail. Binary evaluation erases the real physical mechanisms behind breakdowns. By analyzing OPD metrics on failed episodes, we uncover clear, interpretable failure fingerprints invisible to traditional methods:
+      </p>
+      <ul>
+        <li><strong>Unique Failure Signatures:</strong> Each policy family shows consistent, task-stable failure patterns. On Place Bread Basket, OpenVLA-OFT fails late with severe regression (MP=92.6, CRA=26.3), while ACT fails early from prolonged stagnation (MP=73.1, STR=65.4).</li>
+        <li><strong>Stagnation vs. Regret Failure Modes:</strong> Failure fingerprints clearly distinguish two root causes. On Handover Mic, DP fails from stalled interaction (high STR=57.2), while OpenVLA-OFT fails from unstable correction loops (low PPL=66.2, high CRA=5.66).</li>
+        <li><strong>Actionable Optimization Guidance:</strong> Stagnation failures demand better end-effector stability and contact maintenance; regression failures require stronger error absorption and closed-loop correction; low efficiency calls for fewer redundant motions.</li>
+      </ul>
+      <p>
+        Our OPD framework turns vague failures into clear diagnostic signatures—delivering direct, targeted guidance for policy improvement.
+      </p>
+      <figure class="blog-figure section6-heatmap-figure figure-card figure-card-tight">
+        <img src="assets/images/Diagnosis.png" alt="Diagnosis layer metrics">
+        <figcaption class="blog-figcaption">Failure fingerprints expose distinct mechanisms behind identical binary failure labels.</figcaption>
+      </figure>
+
+      <h2 id="interactive-trajectory-explorer">7. Interactive Trajectory Explorer</h2>
+      <p>
+        Experience the demo firsthand below. As you drag the timeline, the page dynamically aligns the video playback with the real-time progress curve, highlighting the exact position within the full trajectory. The five core metrics for the episode—MC, MP, PPL, CRA, and STR—are updated and displayed concurrently.
+      </p>
+      <p>
+        This module provides a complete temporal audit of an individual execution. Watch as upward trends, regressions, and stagnations on the curve perfectly mirror the robot's physical actions, enabling a precise, frame-by-frame understanding of the rollout's evaluation.
+      </p>
+
+      <div class="interactive-case">
+        <div class="video-selectors">
+          <div class="selector-row">
+            <div class="selector-row-label">Benchmark</div>
+            <div class="selector-buttons selector-buttons-benchmark" id="benchmark-buttons">
+              <button type="button" class="selector-btn selector-btn-outline" data-benchmark="robochallenge">RoboChallenge</button>
+              <button type="button" class="selector-btn selector-btn-filled active" data-benchmark="robotwin">RoboTwin 2.0</button>
+              <button type="button" class="selector-btn selector-btn-outline" data-benchmark="robocasa">RoboCasa</button>
+              <button type="button" class="selector-btn selector-btn-outline" data-benchmark="libero">LIBERO</button>
+              <button type="button" class="selector-btn selector-btn-outline" data-benchmark="simplerenv">SimplerEnv</button>
+            </div>
+          </div>
+          <div class="selector-row">
+            <div class="selector-row-label">Task</div>
+            <div class="selector-buttons selector-buttons-task" id="task-buttons">
+              <button type="button" class="selector-btn selector-btn-filled active" data-task="Handover block">Handover block</button>
+              <button type="button" class="selector-btn selector-btn-outline" data-task="Hang mug">Hang mug</button>
+              <button type="button" class="selector-btn selector-btn-outline" data-task="Place the bread into basket">Place the bread into basket</button>
+              <button type="button" class="selector-btn selector-btn-outline" data-task="Rank RGB blocks">Rank RGB blocks</button>
+            </div>
+          </div>
+        </div>
+        <div class="video-metrics-row">
+          <div class="video-col explorer-main">
+            <div class="video-chart-wrap figure-card figure-card-tight" id="video-wrap">
+              <video class="case-video" id="case-video" preload="metadata"></video>
+              <div class="video-controls">
+                <button class="btn-icon" id="play-btn" aria-label="Play">▶</button>
+                <div class="progress-wrap" id="progress-wrap">
+                  <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <span class="time-display" id="ctrl-time">0:00 / 0:00</span>
+                <div class="vol-wrap">
+                  <button class="btn-icon" id="mute-btn" aria-label="Mute">🔊</button>
+                  <input type="range" id="vol-slider" min="0" max="100" value="100">
+                </div>
+              </div>
+            </div>
+
+            <div class="curve-panel figure-card figure-card-tight">
+              <div class="curve-header">
+                <div class="curve-title">Progress Curve Φ(x<sub>t</sub>)</div>
+                <div class="curve-status-wrap">
+                  <span class="curve-state-chip state-stall" id="progress-state-chip">Stagnating</span>
+                  <div class="curve-status" id="progress-state">Waiting for playback</div>
+                </div>
+              </div>
+              <div id="case-chart" class="case-chart"></div>
+              <div class="case-slider-wrap">
+                <input type="range" id="case-slider" min="0" max="100" value="0" step="0.1">
+                <div class="timeline-meta">
+                  <span class="time-label" id="case-time">0:00 / 0:00</span>
+                  <span class="timeline-sep">•</span>
+                  <span class="timeline-percent" id="timeline-percent">0%</span>
+                </div>
+              </div>
+              <div class="curve-legend">
+                <span class="curve-legend-item"><span class="curve-line curve-line-rise"></span>Progressing</span>
+                <span class="curve-legend-item"><span class="curve-line curve-line-fall"></span>Regressing</span>
+                <span class="curve-legend-item"><span class="curve-line curve-line-stall"></span>Stagnating</span>
+                <span class="curve-legend-item"><span class="curve-dot"></span>Current frame</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="metrics-col explorer-side">
+            <div class="opd-metrics-wrapper figure-card figure-card-tight">
+              <div class="opd-metrics-title">OPD Summary</div>
+              <div class="summary-grid">
+                <div class="summary-item"><span class="summary-key">Φ(t)</span><span class="summary-value" id="m-progress">—</span></div>
+                <div class="summary-item"><span class="summary-key">MP</span><span class="summary-value" id="m-mp">—</span></div>
+                <div class="summary-item"><span class="summary-key">PPL</span><span class="summary-value" id="m-ppl">—</span></div>
+                <div class="summary-item"><span class="summary-key">CRA</span><span class="summary-value" id="m-cra">—</span></div>
+                <div class="summary-item"><span class="summary-key">STR</span><span class="summary-value" id="m-str">—</span></div>
+              </div>
+              <p class="summary-note" id="summary-note">Live trajectory diagnostics update at every frame.</p>
+            </div>
+
+            <div class="side-card figure-card figure-card-tight">
+              <div class="side-card-title">Current Frame Interpretation</div>
+              <p class="state-line" id="frame-interpretation">Move the timeline to inspect frame-level behavior.</p>
+              <p class="state-line state-diagnosis" id="diagnosis-hint">Diagnosis hints will update from trajectory dynamics to highlight trend causes.</p>
+            </div>
+
+            <div class="side-card figure-card figure-card-tight">
+              <div class="side-card-title">Milestones and Metric Preference</div>
+              <div class="milestone-legend-wrap">
+                <div class="metric-mc-row" id="m-mc">
+                  <span class="mc-milestone" data-pct="25">25%</span>
+                  <span class="mc-milestone" data-pct="50">50%</span>
+                  <span class="mc-milestone" data-pct="75">75%</span>
+                  <span class="mc-milestone" data-pct="100">100%</span>
+                </div>
+                <hr class="side-card-divider">
+                <div class="legend-chip-row">
+                  <span class="legend-chip legend-chip-up">↑ Better: MC, MP, PPL</span>
+                  <span class="legend-chip legend-chip-down">↓ Better: CRA, STR</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+        <h2 class="closing-section-heading conclusion-heading">8. Conclusion</h2>
+        <p>
+          What PRM-as-a-Judge introduces is not merely a supplement to the traditional success rate, but a fundamental shift in robot evaluation: moving from binary endgame judgments to the precise characterization of the execution process itself. Through task-conditioned progress potential, the trajectory-level OPD metric system, and the systematic verification of microscopic resolution via RoboPulse, we transform an execution trajectory—once reductively summarized as a simple success or failure—into interpretable, comparable, and diagnosable process signals.
+        </p>
+        <p>
+          For increasingly long-horizon and complex robotic tasks, a single binary success label is no longer sufficient to fully capture the nuances of model behavior. Fine-grained trajectory auditing not only reveals the intrinsic differences between policies in terms of progression depth, execution quality, and failure mechanisms, but it also provides a highly targeted foundation for downstream model analysis and system refinement.
+        </p>
+        <p class="concluding-note"><strong>Final takeaway:</strong> Dense trajectory auditing turns robot evaluation from a binary scoreboard into an actionable analysis workflow for diagnosis, comparison, and iteration.</p>
+        <p class="collab-contact-note">
+          We welcome collaboration and feedback from the robotics community. If you have questions or would like to work with us on dense trajectory evaluation, please reach out at
+          <a href="mailto:jiyuheng2023@ia.ac.cn">jiyuheng2023@ia.ac.cn</a>.
+        </p>
+
+        <h2 class="closing-section-heading">Author Team</h2>
+        <div class="team-grid">
+          <section class="team-card">
+            <h3>Core Team</h3>
+            <p class="team-note">All core team members contributed equally to this project.</p>
+            <ul class="team-list">
+              <li><a href="https://yuheng2000.github.io/" target="_blank">Yuheng Ji</a> (Team Leader)</li>
+              <li>Yuyang Liu</li>
+              <li><a href="https://tanhuajie.github.io/" target="_blank">Huajie Tan</a></li>
+            </ul>
+          </section>
+          <section class="team-card">
+            <h3>Other Contributors</h3>
+            <p class="team-inline-list">Xuchuan Huang, Fanding Huang, Yijie Xu, Cheng Chi, Yuting Zhao, Huaihai Lyu, Peterson Co, Mingyu Cao, Qiongyu Zhang, Zhe Li, Enshen Zhou</p>
+          </section>
+          <section class="team-card">
+            <h3>Advisors</h3>
+            <p class="team-inline-list">Pengwei Wang, Zhongyuan Wang, Shanghang Zhang, Xiaolong Zheng</p>
+          </section>
+        </div>
+
+        <h2 class="closing-section-heading">Citation</h2>
+        <p>If this blog or evaluation pipeline helps your work, please cite us:</p>
+        <div class="citation-card">
+          <div class="citation-head">
+            <span class="citation-kind">BibTeX</span>
+            <button type="button" class="citation-copy-btn" id="copy-citation-btn">Copy citation</button>
+          </div>
+          <pre class="citation-block" id="citation-block"><code id="citation-text">@article{prm_as_a_judge_2026,
+  title   = {PRM-as-a-Judge: A Dense Evaluation Paradigm for Fine-Grained Robotic Auditing},
+  author  = {Ji, Yuheng and Liu, Yuyang and Tan, Huajie and others},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2603.21669}
+}</code></pre>
+          <p class="citation-status" id="citation-status">Copy this BibTeX entry into your bibliography.</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
+  <script>
+    (function() {
+      document.querySelectorAll('.math-latex').forEach(function(el) {
+        var latex = el.getAttribute('data-latex');
+        if (latex && typeof katex !== 'undefined') {
+          katex.render(latex, el, { throwOnError: false, displayMode: true });
+        }
+      });
+    })();
+  </script>
+  <script>
+    (function() {
+      var tocNav = document.getElementById('toc-nav');
+      var contentRoot = document.querySelector('.blog-section');
+      if (!tocNav || !contentRoot) return;
+
+      var headings = Array.prototype.slice.call(contentRoot.querySelectorAll('h2, h3'));
+      if (!headings.length) return;
+
+      var hiddenH3InToc = {
+        'core team': true,
+        'other contributors': true,
+        'advisors': true
+      };
+
+      headings = headings.filter(function(heading) {
+        if (heading.tagName !== 'H3') return true;
+        var key = heading.textContent.trim().toLowerCase();
+        return !hiddenH3InToc[key];
+      });
+
+      function slugify(text) {
+        return text
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .trim()
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-');
+      }
+
+      var used = {};
+      headings.forEach(function(heading, index) {
+        if (!heading.id) {
+          var base = slugify(heading.textContent) || ('section-' + (index + 1));
+          var candidate = base;
+          var n = 2;
+          while (document.getElementById(candidate) || used[candidate]) {
+            candidate = base + '-' + n;
+            n += 1;
+          }
+          heading.id = candidate;
+          used[candidate] = true;
+        }
+
+        var item = document.createElement('div');
+        item.className = 'toc-item toc-item-' + heading.tagName.toLowerCase();
+
+        var link = document.createElement('a');
+        link.className = 'toc-link toc-link-' + heading.tagName.toLowerCase();
+        link.href = '#' + heading.id;
+        link.textContent = heading.textContent.trim();
+
+        item.appendChild(link);
+        tocNav.appendChild(item);
+      });
+
+      var links = Array.prototype.slice.call(tocNav.querySelectorAll('.toc-link'));
+      var targets = links.map(function(link) {
+        var id = link.getAttribute('href').slice(1);
+        return document.getElementById(id);
+      });
+
+      function markActive() {
+        var offset = window.scrollY + 140;
+        var activeIndex = 0;
+
+        targets.forEach(function(target, index) {
+          if (target && target.offsetTop <= offset) {
+            activeIndex = index;
+          }
+        });
+
+        links.forEach(function(link, index) {
+          if (index === activeIndex) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+
+      markActive();
+      window.addEventListener('scroll', markActive, { passive: true });
+      window.addEventListener('resize', markActive);
+    })();
+  </script>
+  <script>
+    (function() {
+      var chartDom = document.getElementById('robopulse-chart');
+      if (!chartDom) return;
+      var myChart = echarts.init(chartDom);
+      var option = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          formatter: function(params) {
+            var s = params[0].axisValue + ' hop<br/>';
+            params.forEach(function(p) {
+              s += p.marker + ' ' + p.seriesName + ': <b>' + (p.value * 100).toFixed(0) + '%</b><br/>';
+            });
+            return s;
+          }
+        },
+        legend: {
+          data: ['CLIP ViT-L/14', 'Gemini 3 Pro Preview', 'Robo-Dopamine'],
+          orient: 'horizontal',
+          left: '0%',
+          right: '0%',
+          bottom: 0,
+          itemGap: 8,
+          textStyle: { fontFamily: '"STIX Two Text", "Times New Roman", serif', fontSize: 9 }
+        },
+        grid: { left: '12%', right: '8%', bottom: '12%', top: '12%', containLabel: true },
+        xAxis: {
+          type: 'category',
+          data: ['Small', 'Medium', 'Large'],
+          axisLabel: { fontFamily: '"STIX Two Text", "Times New Roman", serif' }
+        },
+        yAxis: {
+          type: 'value',
+          name: 'Accuracy',
+          nameLocation: 'middle',
+          nameGap: 45,
+          min: 0,
+          max: 1,
+          axisLabel: {
+            formatter: function(v) { return (v * 100) + '%'; },
+            fontFamily: '"STIX Two Text", "Times New Roman", serif'
+          },
+          nameTextStyle: { fontFamily: '"STIX Two Text", "Times New Roman", serif', fontSize: 11 },
+          splitLine: { lineStyle: { color: '#e8e8e8', type: 'dashed' } }
+        },
+        series: [
+          { name: 'CLIP ViT-L/14', type: 'bar', data: [0.54, 0.59, 0.65], itemStyle: { color: '#5C6BC0' }, barGap: '20%', barCategoryGap: '35%' },
+          { name: 'Gemini 3 Pro Preview', type: 'bar', data: [0.54, 0.67, 0.77], itemStyle: { color: '#26A69A' }, barGap: '20%', barCategoryGap: '35%' },
+          { name: 'Robo-Dopamine', type: 'bar', data: [0.80, 0.85, 0.85], itemStyle: { color: '#E65100' }, barGap: '20%', barCategoryGap: '35%' }
+        ],
+        animation: true,
+        animationDuration: 1200,
+        animationEasing: 'cubicOut',
+        animationDelay: function(idx) { return idx * 80; },
+        animationDelayUpdate: function(idx) { return idx * 80; }
+      };
+      myChart.setOption(option);
+      window.addEventListener('resize', function() { myChart.resize(); });
+    })();
+
+    (function() {
+      var video = document.getElementById('case-video');
+      var slider = document.getElementById('case-slider');
+      var timeLabel = document.getElementById('case-time');
+      var chartDom = document.getElementById('case-chart');
+      var timelinePercent = document.getElementById('timeline-percent');
+      var progressStateEl = document.getElementById('progress-state');
+      var progressStateChipEl = document.getElementById('progress-state-chip');
+      var frameInterpretationEl = document.getElementById('frame-interpretation');
+      var diagnosisHintEl = document.getElementById('diagnosis-hint');
+      var summaryNoteEl = document.getElementById('summary-note');
+      var frameData = [];
+      var caseChart = null;
+
+      function generateFrameData(durationSec) {
+        var n = Math.max(60, Math.floor(durationSec * 4));
+        var data = [];
+        var reward = 0.05, mc = 0.1, mp = 0.1;
+        for (var i = 0; i <= n; i++) {
+          var t = (i / n) * durationSec;
+          reward = Math.min(1, reward + 0.02 + (Math.random() - 0.45) * 0.15);
+          mc = Math.min(1, mc + (Math.random() - 0.3) * 0.2);
+          mp = Math.max(mp, reward * (0.9 + Math.random() * 0.2));
+          data.push({
+            t: t,
+            reward: Math.max(0, Math.min(1, reward)),
+            MC: Math.max(0, Math.min(1, mc)),
+            MP: Math.max(0, Math.min(1, mp)),
+            PPL: 0.5 + Math.random() * 0.5,
+            CRA: Math.random() * 2.5,
+            STR: Math.random() * 0.6
+          });
+        }
+        return data;
+      }
+
+      function interpolate(data, t) {
+        if (!data.length) return null;
+        if (t <= data[0].t) return data[0];
+        if (t >= data[data.length - 1].t) return data[data.length - 1];
+        for (var i = 0; i < data.length - 1; i++) {
+          if (data[i].t <= t && t <= data[i + 1].t) {
+            var a = (t - data[i].t) / (data[i + 1].t - data[i].t);
+            var m = {
+              reward: data[i].reward + a * (data[i + 1].reward - data[i].reward),
+              MC: data[i].MC + a * (data[i + 1].MC - data[i].MC),
+              MP: data[i].MP + a * (data[i + 1].MP - data[i].MP),
+              PPL: data[i].PPL + a * (data[i + 1].PPL - data[i].PPL),
+              CRA: data[i].CRA + a * (data[i + 1].CRA - data[i].CRA),
+              STR: data[i].STR + a * (data[i + 1].STR - data[i].STR)
+            };
+            if (data[i].M25 !== undefined && data[i + 1].M25 !== undefined) {
+              m.M25 = data[i].M25 + a * (data[i + 1].M25 - data[i].M25);
+              m.M50 = data[i].M50 + a * (data[i + 1].M50 - data[i].M50);
+              m.M75 = data[i].M75 + a * (data[i + 1].M75 - data[i].M75);
+              m.M100 = data[i].M100 + a * (data[i + 1].M100 - data[i].M100);
+            }
+            return m;
+          }
+        }
+        return data[data.length - 1];
+      }
+
+      function fmtTime(s) {
+        var m = Math.floor(s / 60);
+        var sec = Math.floor(s % 60);
+        return m + ':' + (sec < 10 ? '0' : '') + sec;
+      }
+
+      var COLOR_RISE = 'rgba(129, 199, 132, 0.9)';
+      var COLOR_FALL = 'rgba(239, 83, 80, 0.9)';
+      var COLOR_CURSOR = '#2f5fa7';
+      var COLOR_REFERENCE = 'rgba(143, 157, 178, 0.55)';
+
+      function getPhaseName(progress) {
+        if (progress < 0.25) return 'Initialization';
+        if (progress < 0.5) return 'Approach';
+        if (progress < 0.75) return 'Manipulation';
+        return 'Finishing';
+      }
+
+      function getProgressDynamics(t, m) {
+        var prev = t > 0 ? interpolate(frameData, Math.max(0, t - 0.2)) : null;
+        var delta = prev ? (m.reward - prev.reward) : 0;
+        if (delta > 0.01) return { type: 'progress', delta: delta };
+        if (delta < -0.01) return { type: 'regress', delta: delta };
+        return { type: 'stall', delta: delta };
+      }
+
+      function buildSegments(filtered, t) {
+        var riseData = [], fallData = [];
+        for (var i = 0; i < filtered.length - 1; i++) {
+          var a = filtered[i], b = filtered[i + 1];
+          var seg = [[a.t, a.reward], [b.t, b.reward]];
+          if (b.reward > a.reward) {
+            if (riseData.length) riseData.push([null, null]);
+            riseData.push.apply(riseData, seg);
+          } else {
+            if (fallData.length) fallData.push([null, null]);
+            fallData.push.apply(fallData, seg);
+          }
+        }
+        if (t > 0 && filtered.length > 0) {
+          var last = filtered[filtered.length - 1];
+          var m = interpolate(frameData, t);
+          if (m && last.t < t) {
+            var seg = [[last.t, last.reward], [t, m.reward]];
+            if (m.reward > last.reward) {
+              if (riseData.length) riseData.push([null, null]);
+              riseData.push.apply(riseData, seg);
+            } else {
+              if (fallData.length) fallData.push([null, null]);
+              fallData.push.apply(fallData, seg);
+            }
+          }
+        }
+        return { rise: riseData, fall: fallData };
+      }
+
+      function updateChart(t) {
+        if (!caseChart || !frameData.length) return;
+        var m = interpolate(frameData, t);
+        var filtered = frameData.filter(function(d) { return d.t <= t; });
+        if (filtered.length === 0) {
+          if (m) filtered = [{ t: t, reward: m.reward }];
+        }
+        if (filtered.length < 2) {
+          caseChart.setOption({
+            series: [
+              { id: 'cursor-line', data: m ? [[t, 0], [t, 1]] : [] },
+              { id: 'rise-path', data: [] },
+              { id: 'fall-path', data: [] },
+              { id: 'cursor-point', data: m ? [[t, m.reward]] : [] }
+            ]
+          });
+          return;
+        }
+        var seg = buildSegments(filtered, t);
+        caseChart.setOption({
+          series: [
+            { id: 'cursor-line', data: m ? [[t, 0], [t, 1]] : [] },
+            { id: 'rise-path', data: seg.rise, lineStyle: { color: COLOR_RISE }, areaStyle: { color: 'rgba(129, 199, 132, 0.22)' } },
+            { id: 'fall-path', data: seg.fall, lineStyle: { color: COLOR_FALL }, areaStyle: { color: 'rgba(239, 83, 80, 0.22)' } },
+            { id: 'cursor-point', data: m ? [[t, m.reward]] : [] }
+          ]
+        });
+      }
+
+      function updateBorder(t) {
+        var wrap = document.getElementById('video-wrap');
+        if (!wrap || !frameData.length) return;
+        var m = interpolate(frameData, t);
+        var prev = t > 0 ? interpolate(frameData, Math.max(0, t - 0.05)) : null;
+        var rising = prev ? (m.reward > prev.reward) : true;
+        wrap.style.borderColor = rising ? COLOR_RISE : COLOR_FALL;
+      }
+
+      function getMaxRewardUpTo(t) {
+        if (!frameData.length) return 0;
+        var maxR = 0;
+        for (var i = 0; i < frameData.length && frameData[i].t <= t; i++) {
+          if (frameData[i].reward > maxR) maxR = frameData[i].reward;
+        }
+        var m = interpolate(frameData, t);
+        if (m && m.reward > maxR) maxR = m.reward;
+        return maxR;
+      }
+
+      function updateUI(t) {
+        var m = interpolate(frameData, t);
+        var maxR = frameData.length ? getMaxRewardUpTo(t) : 0;
+        var milestones = [25, 50, 75, 100];
+        milestones.forEach(function(pct) {
+            var el = document.querySelector('.mc-milestone[data-pct="' + pct + '"]');
+            if (el) {
+              var reached;
+              if (m && m['M' + pct] !== undefined) {
+                reached = m['M' + pct] >= 50;
+              } else {
+                reached = maxR >= pct / 100;
+              }
+              el.classList.toggle('reached', reached);
+              el.textContent = pct + '%';
+            }
+          });
+        var mpEl = document.getElementById('m-mp');
+        if (mpEl) mpEl.textContent = m ? m.MP.toFixed(3) : '—';
+        var progressEl = document.getElementById('m-progress');
+        if (progressEl) progressEl.textContent = m ? m.reward.toFixed(3) : '—';
+        var pplEl = document.getElementById('m-ppl');
+        if (pplEl) pplEl.textContent = m ? m.PPL.toFixed(3) : '—';
+        var craEl = document.getElementById('m-cra');
+        if (craEl) craEl.textContent = m ? m.CRA.toFixed(3) : '—';
+        var strEl = document.getElementById('m-str');
+        if (strEl) strEl.textContent = m ? m.STR.toFixed(3) : '—';
+        if (timelinePercent) {
+          var dur = video && video.duration ? video.duration : 0;
+          timelinePercent.textContent = dur > 0 ? Math.round((t / dur) * 100) + '%' : '0%';
+        }
+        if (m) {
+          var dynamics = getProgressDynamics(t, m);
+          if (progressStateEl) {
+            progressStateEl.classList.remove('state-progress', 'state-regress', 'state-stall');
+            progressStateEl.classList.add(
+              dynamics.type === 'progress' ? 'state-progress' :
+              dynamics.type === 'regress' ? 'state-regress' : 'state-stall'
+            );
+            if (dynamics.type === 'progress') {
+              progressStateEl.textContent = 'Progressing +' + (dynamics.delta * 100).toFixed(1) + '%';
+            } else if (dynamics.type === 'regress') {
+              progressStateEl.textContent = 'Regressing ' + (dynamics.delta * 100).toFixed(1) + '%';
+            } else {
+              progressStateEl.textContent = 'Stagnating around current state';
+            }
+          }
+          if (progressStateChipEl) {
+            progressStateChipEl.classList.remove('state-progress', 'state-regress', 'state-stall');
+            if (dynamics.type === 'progress') {
+              progressStateChipEl.classList.add('state-progress');
+              progressStateChipEl.textContent = 'Progressing';
+            } else if (dynamics.type === 'regress') {
+              progressStateChipEl.classList.add('state-regress');
+              progressStateChipEl.textContent = 'Regressing';
+            } else {
+              progressStateChipEl.classList.add('state-stall');
+              progressStateChipEl.textContent = 'Stagnating';
+            }
+          }
+          if (frameInterpretationEl) {
+            frameInterpretationEl.textContent =
+              'Frame summary: ' + getPhaseName(m.reward) + ' phase, Φ=' + m.reward.toFixed(3) + ', MP=' + m.MP.toFixed(3) + '.';
+          }
+          if (diagnosisHintEl) {
+            if (m.STR > 0.45) {
+              diagnosisHintEl.textContent = 'Diagnosis: stagnation dominates (STR=' + m.STR.toFixed(3) + '), suggesting limited state transition efficiency.';
+            } else if (m.CRA > 1.0) {
+              diagnosisHintEl.textContent = 'Diagnosis: regression pressure is visible (CRA=' + m.CRA.toFixed(3) + '), indicating unstable correction loops.';
+            } else if (m.PPL > 0.72) {
+              diagnosisHintEl.textContent = 'Diagnosis: trajectory is efficient and mostly monotonic (PPL=' + m.PPL.toFixed(3) + ').';
+            } else {
+              diagnosisHintEl.textContent = 'Diagnosis: mixed dynamics with alternating gains and stalls; inspect local transitions for attribution.';
+            }
+          }
+          if (summaryNoteEl) {
+            if (dynamics.type === 'progress') {
+              summaryNoteEl.textContent = 'Current window is improving with positive progress slope.';
+            } else if (dynamics.type === 'regress') {
+              summaryNoteEl.textContent = 'Current window shows rollback pressure; monitor correction quality.';
+            } else {
+              summaryNoteEl.textContent = 'Current window is near-flat; progression momentum is limited.';
+            }
+          }
+        }
+        updateChart(t);
+        updateBorder(t);
+      }
+
+      function initCase() {
+        if (!video || !chartDom) return;
+        video.addEventListener('loadedmetadata', function() {
+          var dur = video.duration;
+          if (!dur || isNaN(dur)) dur = 10;
+          if ((currentBenchmark === 'robotwin' || currentBenchmark === 'libero' || currentBenchmark === 'robocasa' || currentBenchmark === 'robochallenge' || currentBenchmark === 'simplerenv') && pendingCsvData && pendingCsvData.length) {
+            frameData = buildFrameDataFromCsv(pendingCsvData, dur);
+          } else {
+            frameData = generateFrameData(dur);
+          }
+          slider.max = 100;
+          timeLabel.textContent = '0:00 / ' + fmtTime(dur);
+
+          var fullPath = frameData.map(function(d) { return [d.t, d.reward]; });
+
+          if (caseChart) {
+            caseChart.dispose();
+          }
+          caseChart = echarts.init(chartDom);
+          caseChart.setOption({
+            backgroundColor: 'transparent',
+            tooltip: { show: false },
+            grid: { left: '9.5%', right: '3.2%', top: '12%', bottom: '14%', containLabel: true },
+            xAxis: {
+              type: 'value',
+              min: 0,
+              max: dur,
+              show: true,
+              name: 'Time (s)',
+              nameLocation: 'end',
+              nameTextStyle: { color: '#697487', fontSize: 10, padding: [6, 0, 0, 0], fontFamily: '"STIX Two Text", serif' },
+              axisLine: { lineStyle: { color: '#c7d0dd' } },
+              axisLabel: { color: '#667084', fontFamily: '"STIX Two Text", serif', fontSize: 10 },
+              splitLine: { show: false }
+            },
+            yAxis: {
+              type: 'value',
+              min: 0,
+              max: 1,
+              show: true,
+              name: 'Φ(x_t)',
+              nameLocation: 'middle',
+              nameGap: 38,
+              nameTextStyle: { color: '#697487', fontSize: 10, fontFamily: '"STIX Two Text", serif' },
+              axisLine: { lineStyle: { color: '#c7d0dd' } },
+              axisLabel: { color: '#667084', fontFamily: '"STIX Two Text", serif', fontSize: 10 },
+              splitLine: { lineStyle: { color: '#e8edf4', type: 'dashed' } }
+            },
+            series: [
+              { id: 'full-path', type: 'line', data: fullPath, smooth: true, symbol: 'none', lineStyle: { color: COLOR_REFERENCE, width: 1.4, type: 'dashed' }, animation: false, z: 1 },
+              { id: 'cursor-line', type: 'line', data: [[0, 0], [0, 1]], symbol: 'none', lineStyle: { color: 'rgba(47, 95, 167, 0.65)', width: 1.4, type: 'dashed' }, animation: false, z: 4, emphasis: { disabled: true } },
+              { id: 'rise-path', type: 'line', data: [], smooth: true, symbol: 'none', lineStyle: { color: COLOR_RISE, width: 2.4 }, areaStyle: { color: 'rgba(129, 199, 132, 0.22)' }, animation: false, z: 3 },
+              { id: 'fall-path', type: 'line', data: [], smooth: true, symbol: 'none', lineStyle: { color: COLOR_FALL, width: 2.4 }, areaStyle: { color: 'rgba(239, 83, 80, 0.22)' }, animation: false, z: 3 },
+              { id: 'cursor-point', type: 'scatter', data: [[0, 0]], symbolSize: 10, itemStyle: { color: COLOR_CURSOR, borderColor: '#fff', borderWidth: 2 }, z: 6, animation: false }
+            ]
+          });
+
+          updateChart(0);
+          updateBorder(0);
+          updateUI(0);
+
+          var wrap = chartDom.parentElement;
+          if (wrap && window.ResizeObserver) {
+            new ResizeObserver(function() { caseChart.resize(); }).observe(wrap);
+          }
+          setTimeout(function() { if (caseChart) caseChart.resize(); }, 200);
+        });
+
+        var TASKS_BY_BENCHMARK = {
+          robotwin: [
+            { id: 'Handover block', name: 'Handover block', color: '#5C6BC0' },
+            { id: 'Hang mug', name: 'Hang mug', color: '#26A69A' },
+            { id: 'Place the bread into basket', name: 'Place the bread into basket', color: '#E65100' },
+            { id: 'Rank RGB blocks', name: 'Rank RGB blocks', color: '#E8641B' }
+          ],
+          robocasa: [
+            { id: 'Close the cabinet doors', name: 'Close the cabinet doors', color: '#5C6BC0' },
+            { id: 'Open the right drawer', name: 'Open the right drawer', color: '#26A69A' },
+            { id: 'Pick the bread and place it on the counter', name: 'Pick the bread and place it on the counter', color: '#E65100' },
+            { id: 'Turn off the sink faucet', name: 'Turn off the sink faucet', color: '#7B1FA2' },
+            { id: 'Turn on the stove', name: 'Turn on the stove', color: '#D84315' }
+          ],
+          libero: [
+            { id: 'Put the bowl on the stove', name: 'Put the bowl on the stove', color: '#2B69E4' },
+            { id: 'Pick up the butter and place it in the basket', name: 'Pick up the butter and place it in the basket', color: '#059669' },
+            { id: 'Pick up the book and place it in the back compartment of the caddy', name: 'Pick up the book and place it in the caddy', color: '#9333EA' },
+            { id: 'Pick up the black bowl between the plate and the ramekin and place it on the plate', name: 'Pick up the black bowl on the plate', color: '#E8641B' }
+          ],
+          robochallenge: [
+            { id: 'Arrange flowers', name: 'Arrange flowers', color: '#E91E63' },
+            { id: 'Fold dishcloth', name: 'Fold dishcloth', color: '#9C27B0' },
+            { id: 'Move objects into the box', name: 'Move objects into the box', color: '#673AB7' },
+            { id: 'Scan QR code', name: 'Scan QR code', color: '#3F51B5' },
+            { id: 'Search green boxes', name: 'Search green boxes', color: '#6A1B9A' }
+          ],
+          simplerenv: [
+            { id: 'Close bottom drawer', name: 'Close bottom drawer', color: '#00897B' },
+            { id: 'Grasp Coke Can', name: 'Grasp Coke Can', color: '#26A69A' },
+            { id: 'Put carrot on plate', name: 'Put carrot on plate', color: '#4DB6AC' },
+            { id: 'Stack cube', name: 'Stack cube', color: '#00796B' }
+          ]
+        };
+        var currentBenchmark = 'robotwin';
+        var currentTask = 'Handover block';
+
+        function renderTaskButtons(benchmarkId) {
+          var container = document.getElementById('task-buttons');
+          if (!container) return;
+          var tasks = TASKS_BY_BENCHMARK[benchmarkId] || TASKS_BY_BENCHMARK.robotwin;
+          container.innerHTML = tasks.map(function(t) {
+            var isActive = (t.id === currentTask);
+            var btnClass = 'selector-btn ' + (isActive ? 'selector-btn-filled active' : 'selector-btn-outline');
+            return '<button type="button" class="' + btnClass + '" data-task="' + t.id + '">' + t.name + '</button>';
+          }).join('');
+          container.querySelectorAll('.selector-btn').forEach(function(btn) {
+            btn.addEventListener('click', onTaskClick);
+          });
+        }
+
+        function onBenchmarkClick(e) {
+          var btn = e.target.closest('.selector-btn');
+          if (!btn) return;
+          document.querySelectorAll('#benchmark-buttons .selector-btn').forEach(function(b) {
+            b.classList.remove('active', 'selector-btn-filled');
+            b.classList.add('selector-btn-outline');
+          });
+          btn.classList.remove('selector-btn-outline');
+          btn.classList.add('selector-btn-filled', 'active');
+          currentBenchmark = btn.dataset.benchmark;
+          var tasks = TASKS_BY_BENCHMARK[currentBenchmark] || [];
+          currentTask = tasks[0] ? tasks[0].id : '';
+          renderTaskButtons(currentBenchmark);
+          loadTaskContent();
+        }
+
+        var pendingCsvData = null;
+
+        function parseStepMetricsCsv(text) {
+          var rows = text.trim().split('\n');
+          if (rows.length < 2) return [];
+          var headers = rows[0].split(',');
+          var data = [];
+          for (var i = 1; i < rows.length; i++) {
+            var vals = rows[i].split(',');
+            var row = {};
+            headers.forEach(function(h, j) {
+              row[h.trim()] = vals[j] !== undefined ? parseFloat(vals[j].trim()) || 0 : 0;
+            });
+            data.push(row);
+          }
+          return data;
+        }
+
+        function buildFrameDataFromCsv(csvRows, durationSec) {
+          if (!csvRows.length) return [];
+          var n = csvRows.length;
+          var data = [];
+          data.push({
+            t: 0,
+            reward: 0,
+            MC: 0,
+            MP: csvRows[0].MP || 0,
+            PPL: csvRows[0].PPL || 0,
+            CRA: csvRows[0].CRA || 0,
+            STR: csvRows[0].STR || 0,
+            M25: 0, M50: 0, M75: 0, M100: 0
+          });
+          for (var i = 0; i < n; i++) {
+            var r = csvRows[i];
+            var t = ((i + 1) / n) * durationSec;
+            var progress = (r.StepProgress !== undefined ? r.StepProgress : 0);
+            data.push({
+              t: t,
+              reward: progress,
+              MC: progress,
+              MP: r.MP !== undefined ? r.MP : 0,
+              PPL: r.PPL !== undefined ? r.PPL : 0,
+              CRA: r.CRA !== undefined ? r.CRA : 0,
+              STR: r.STR !== undefined ? r.STR : 0,
+              M25: r.M25 !== undefined ? r.M25 : 0,
+              M50: r.M50 !== undefined ? r.M50 : 0,
+              M75: r.M75 !== undefined ? r.M75 : 0,
+              M100: r.M100 !== undefined ? r.M100 : 0
+            });
+          }
+          return data;
+        }
+
+        function loadTaskContent() {
+          if (currentBenchmark === 'robotwin') {
+            var basePath = 'assets/videos/demos/RoboTwin/' + encodeURIComponent(currentTask) + '/';
+            var csvUrl = basePath + 'step_metrics.csv';
+            pendingCsvData = null;
+            fetch(csvUrl).then(function(res) { return res.text(); }).then(function(text) {
+              pendingCsvData = parseStepMetricsCsv(text);
+              video.src = basePath + 'episode.mp4';
+            }).catch(function() {
+              pendingCsvData = [];
+              video.src = basePath + 'episode.mp4';
+            });
+          } else if (currentBenchmark === 'libero') {
+            var basePath = 'assets/videos/demos/Libero/' + encodeURIComponent(currentTask) + '/';
+            var csvUrl = basePath + 'step_metrics.csv';
+            pendingCsvData = null;
+            fetch(csvUrl).then(function(res) { return res.text(); }).then(function(text) {
+              pendingCsvData = parseStepMetricsCsv(text);
+              video.src = basePath + 'episode.mp4';
+            }).catch(function() {
+              pendingCsvData = [];
+              video.src = basePath + 'episode.mp4';
+            });
+          } else if (currentBenchmark === 'robocasa') {
+            var basePath = 'assets/videos/demos/RoboCasa/' + encodeURIComponent(currentTask) + '/';
+            var csvUrl = basePath + 'step_metrics.csv';
+            pendingCsvData = null;
+            fetch(csvUrl).then(function(res) { return res.text(); }).then(function(text) {
+              pendingCsvData = parseStepMetricsCsv(text);
+              video.src = basePath + 'episode.mp4';
+            }).catch(function() {
+              pendingCsvData = [];
+              video.src = basePath + 'episode.mp4';
+            });
+          } else if (currentBenchmark === 'robochallenge') {
+            var basePath = 'assets/videos/demos/RoboChallenge/' + encodeURIComponent(currentTask) + '/';
+            var csvUrl = basePath + 'step_metrics.csv';
+            pendingCsvData = null;
+            fetch(csvUrl).then(function(res) { return res.text(); }).then(function(text) {
+              pendingCsvData = parseStepMetricsCsv(text);
+              video.src = basePath + 'episode.mp4';
+            }).catch(function() {
+              pendingCsvData = [];
+              video.src = basePath + 'episode.mp4';
+            });
+          } else if (currentBenchmark === 'simplerenv') {
+            var basePath = 'assets/videos/demos/SimplerEnv/' + encodeURIComponent(currentTask) + '/';
+            var csvUrl = basePath + 'step_metrics.csv';
+            pendingCsvData = null;
+            fetch(csvUrl).then(function(res) { return res.text(); }).then(function(text) {
+              pendingCsvData = parseStepMetricsCsv(text);
+              video.src = basePath + 'episode.mp4';
+            }).catch(function() {
+              pendingCsvData = [];
+              video.src = basePath + 'episode.mp4';
+            });
+          } else {
+            pendingCsvData = null;
+            video.src = 'assets/videos/' + currentTask + '.mp4';
+          }
+        }
+
+        function onTaskClick(e) {
+          var btn = e.target.closest('.selector-btn');
+          if (!btn) return;
+          document.querySelectorAll('#task-buttons .selector-btn').forEach(function(b) {
+            b.classList.remove('active', 'selector-btn-filled');
+            b.classList.add('selector-btn-outline');
+          });
+          btn.classList.remove('selector-btn-outline');
+          btn.classList.add('selector-btn-filled', 'active');
+          currentTask = btn.dataset.task;
+          loadTaskContent();
+        }
+
+        document.querySelectorAll('#benchmark-buttons .selector-btn').forEach(function(btn) {
+          btn.addEventListener('click', onBenchmarkClick);
+        });
+        document.querySelectorAll('#task-buttons .selector-btn').forEach(function(btn) {
+          btn.addEventListener('click', onTaskClick);
+        });
+
+        loadTaskContent();
+
+        var playBtn = document.getElementById('play-btn');
+        var progressWrap = document.getElementById('progress-wrap');
+        var progressFill = document.getElementById('progress-fill');
+        var ctrlTime = document.getElementById('ctrl-time');
+        var muteBtn = document.getElementById('mute-btn');
+        var volSlider = document.getElementById('vol-slider');
+
+        if (playBtn) {
+          playBtn.addEventListener('click', function() {
+            if (video.paused) video.play(); else video.pause();
+          });
+        }
+        video.addEventListener('play', function() { if (playBtn) playBtn.textContent = '⏸'; });
+        video.addEventListener('pause', function() { if (playBtn) playBtn.textContent = '▶'; });
+
+        if (progressWrap) {
+          progressWrap.addEventListener('click', function(e) {
+            if (!video.duration) return;
+            var rect = progressWrap.getBoundingClientRect();
+            var pct = (e.clientX - rect.left) / rect.width;
+            video.currentTime = pct * video.duration;
+          });
+        }
+
+        if (muteBtn) {
+          muteBtn.addEventListener('click', function() {
+            video.muted = !video.muted;
+            muteBtn.textContent = video.muted ? '🔇' : '🔊';
+            if (volSlider) volSlider.value = video.muted ? 0 : video.volume * 100;
+          });
+        }
+        if (volSlider) {
+          volSlider.addEventListener('input', function() {
+            video.volume = parseFloat(volSlider.value) / 100;
+            video.muted = video.volume === 0;
+            if (muteBtn) muteBtn.textContent = video.volume === 0 ? '🔇' : '🔊';
+          });
+        }
+
+        slider.addEventListener('input', function() {
+          var pct = parseFloat(slider.value) / 100;
+          var t = pct * (video.duration || 0);
+          video.currentTime = t;
+          timeLabel.textContent = fmtTime(t) + ' / ' + fmtTime(video.duration || 0);
+          updateUI(t);
+        });
+
+        video.addEventListener('timeupdate', function() {
+          var t = video.currentTime;
+          var dur = video.duration;
+          if (dur > 0) {
+            slider.value = (t / dur) * 100;
+            timeLabel.textContent = fmtTime(t) + ' / ' + fmtTime(dur);
+            if (progressFill) progressFill.style.width = (t / dur) * 100 + '%';
+            if (ctrlTime) ctrlTime.textContent = fmtTime(t) + ' / ' + fmtTime(dur);
+            updateUI(t);
+          }
+        });
+
+        video.addEventListener('seeked', function() {
+          var t = video.currentTime;
+          var dur = video.duration;
+          if (dur > 0) {
+            slider.value = (t / dur) * 100;
+            updateUI(t);
+          }
+        });
+
+        window.addEventListener('resize', function() { if (caseChart) caseChart.resize(); });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCase);
+      } else {
+        initCase();
+      }
+    })();
+  </script>
+  <script>
+    (function() {
+      var copyBtn = document.getElementById('copy-citation-btn');
+      var citationTextEl = document.getElementById('citation-text');
+      var citationStatusEl = document.getElementById('citation-status');
+      if (!copyBtn || !citationTextEl) return;
+
+      function setStatus(msg, copied) {
+        if (citationStatusEl) citationStatusEl.textContent = msg;
+        copyBtn.classList.toggle('copied', !!copied);
+      }
+
+      copyBtn.addEventListener('click', function() {
+        var text = citationTextEl.textContent || '';
+        if (!text.trim()) return;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function() {
+            setStatus('Citation copied to clipboard.', true);
+          }).catch(function() {
+            setStatus('Copy failed. Please copy manually.', false);
+          });
+        } else {
+          var temp = document.createElement('textarea');
+          temp.value = text;
+          temp.setAttribute('readonly', '');
+          temp.style.position = 'absolute';
+          temp.style.left = '-9999px';
+          document.body.appendChild(temp);
+          temp.select();
+          try {
+            document.execCommand('copy');
+            setStatus('Citation copied to clipboard.', true);
+          } catch (e) {
+            setStatus('Copy failed. Please copy manually.', false);
+          }
+          document.body.removeChild(temp);
+        }
+
+        setTimeout(function() {
+          copyBtn.classList.remove('copied');
+        }, 1600);
+      });
+    })();
+  </script>
+</body>
+
+</html>

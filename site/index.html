@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>PRM-as-a-Judge</title>
+  <meta name="description"
+        content="PRM-as-a-Judge: A dense evaluation paradigm for robotics.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+  <style>
+    body {
+      font-family: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      line-height: 1.7;
+    }
+
+    .site-nav {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1.5rem;
+      padding: 1.25rem 1.5rem;
+      max-width: 860px;
+      margin: 0 auto;
+      border-bottom: 1px solid #e8e8e8;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(250, 250, 250, 0.94);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+    }
+
+    .site-nav a {
+      color: #666;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .site-nav a:hover {
+      color: #1a1a1a;
+    }
+
+    .site-nav a.active {
+      color: #1a1a1a;
+      font-weight: 500;
+    }
+
+    .page-container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 4rem;
+    }
+
+    .home-hero {
+      text-align: center;
+      padding: 0 10%;
+    }
+
+    .home-hero h1 {
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .home-hero p {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+
+    .home-hero .title-with-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .title-logo {
+      height: 3.5rem;
+      width: auto;
+      margin-right: -0.4rem;
+    }
+
+    .home-links {
+      margin-top: 2rem;
+    }
+
+    .home-links a {
+      display: inline-block;
+      margin: 0 0.5rem;
+      color: #666;
+      text-decoration: none;
+    }
+
+    .home-links a:hover {
+      color: #1a1a1a;
+    }
+
+    .home-section {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e8e8e8;
+    }
+
+    .home-section h2 {
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #1a1a1a;
+    }
+
+    .news-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .news-list li {
+      margin-bottom: 0.75rem;
+      padding-left: 1.25rem;
+      position: relative;
+    }
+
+    .news-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #666;
+    }
+
+    .news-list a {
+      color: #1a1a1a;
+      text-decoration: none;
+    }
+
+    .news-date {
+      display: block;
+      color: #7a7a7a;
+      font-size: 0.9rem;
+      margin-bottom: 0.12rem;
+    }
+
+    .news-list a:hover {
+      color: #E8641B;
+      text-decoration: underline;
+    }
+
+    .home-collab {
+      margin-top: 3rem;
+      padding: 2rem;
+      background: #f5f5f5;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .home-collab p {
+      color: #333;
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .home-collab a {
+      color: #1a1a1a;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .home-collab a:hover {
+      color: #E8641B;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="site-nav">
+    <a href="index.html" class="active">Home</a>
+    <a href="blog.html">Blog</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </nav>
+
+  <main class="page-container">
+    <div class="home-hero">
+      <h1 class="title-with-logo">
+        <img src="assets/images/logo-clip.png" alt="PRM-as-a-Judge" class="title-logo">
+        <span>PRM-as-a-Judge</span>
+      </h1>
+      <p>
+        A dense evaluation paradigm that turns trajectory videos into a goldmine of progress signals. 
+        Moving beyond the "Pass/Fail" mirage in robotics.
+      </p>
+      <div class="home-links">
+        <a href="blog.html">→ Read the blog</a>
+        <a href="leaderboard.html">→ View leaderboard</a>
+      </div>
+    </div>
+
+    <section class="home-section">
+      <h2>News 🎉</h2>
+      <ul class="news-list">
+        <li>
+          <span class="news-date">March 23, 2026</span>
+          <a href="blog.html">PRM-as-a-Judge blog and arXiv release — Read our blog for methodology, OPD framework, and interactive demos</a>
+        </li>
+        <li>
+          <span class="news-date">March 20, 2026</span>
+          <a href="leaderboard.html">RoboChallenge task leaderboard now available — Check out rankings and submit your results</a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="home-collab">
+      <p>We welcome collaboration and feedback from the robotics community. If you have questions or would like to work with us on dense trajectory evaluation, please reach out at <a href="mailto:jiyuheng2023@ia.ac.cn">jiyuheng2023@ia.ac.cn</a>.</p>
+    </section>
+  </main>
+</body>
+
+</html>
