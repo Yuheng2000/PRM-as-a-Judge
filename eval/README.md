@@ -2,26 +2,6 @@
 
 This folder contains a **minimal, reproducible evaluation toolkit** for PRM-as-a-Judge style trajectory auditing.
 
-## What Was Kept
-
-- Core runner: `run_judge.py`
-- Aggregation scripts:
-  - `calculate_all_metrics.py`
-  - `calculate_step_metrics_per_trajectory.py`
-- Official inference dependency: `examples/inference.py`
-- A small demo benchmark: `demo_cases`
-  - 2 tasks
-  - 1 model folder (`demo_mix`)
-  - 2 episodes per task (three views each)
-
-## What Was Removed
-
-To keep the repository clean and lightweight, the following were removed:
-
-- Large-scale benchmark videos (e.g., RoboTwin full set)
-- Historical run outputs and temporary caches
-- Machine-specific legacy scripts and absolute-path local test scripts
-
 ## Directory Layout
 
 ```text
@@ -48,18 +28,9 @@ eval/
     └── .gitkeep
 ```
 
-## Important Note About Demo Videos
-
-The current demo mp4 files are **placeholders (0-byte)** kept only to preserve filename/structure conventions.
-To run real evaluation, replace them with valid videos following the same naming format:
-
-```text
-episodeX_{high|left|right}_*.mp4
-```
-
 ## Quick Start
 
-### 1) Dry-run sample discovery (no model loading)
+### 1) Dry-run sample discovery
 
 ```bash
 python eval/run_judge.py \
