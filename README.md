@@ -28,7 +28,7 @@
 ## 🔥 Updates
 
 - **`2026-03-30`**: 🔥 The [RoboPulse benchmark page](https://huggingface.co/datasets/yuheng2000/RoboPulse) is now online on Hugging Face.
-- **`2026-03-27`**: 🔥 PRM-as-a-Judge evaluation with PRM backends is now open in this repo. Start with Robo-Dopamine and try it on your own rollouts.
+- **`2026-03-27`**: 🔥 PRM-as-a-Judge evaluation with PRM backends is now open in this repo. Start with [Robo-Dopamine](https://huggingface.co/tanhuajie2001/Robo-Dopamine-GRM-2.0-8B-Preview) and try it on your own rollouts.
 - **`2026-03-23`**: 🔥 PRM-as-a-Judge blog and arXiv paper are released. See methodology, OPD definitions, and demos in the [technical blog](https://prm-as-a-judge.github.io/blog.html).
 - **`2026-03-20`**: 🔥 RoboChallenge Table30 leaderboard results are released on the [leaderboard page](https://prm-as-a-judge.github.io/leaderboard.html).
 
