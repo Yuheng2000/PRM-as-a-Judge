@@ -14,6 +14,8 @@
   &nbsp;
   <a href="https://prm-as-a-judge.github.io/leaderboard.html"><img src="https://img.shields.io/badge/🏆%20Leaderboard-RoboChallenge%20Table30-orange" alt="Leaderboard"></a>
   &nbsp;
+  <a href="https://huggingface.co/datasets/yuheng2000/RoboPulse"><img src="https://img.shields.io/badge/🤗%20Benchmark-RoboPulse-gold" alt="RoboPulse Benchmark"></a>
+  &nbsp;
   <a href="https://huggingface.co/tanhuajie2001/Robo-Dopamine-GRM-2.0-8B-Preview"><img src="https://img.shields.io/badge/🤗%20PRM-Robo--Dopamine%208B%20Preview-yellow" alt="PRM"></a>
   &nbsp;
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-7F55B1" alt="License"></a>
@@ -25,6 +27,7 @@
 
 ## 🔥 Updates
 
+- **`2026-03-30`**: 🔥 The [RoboPulse benchmark page](https://huggingface.co/datasets/yuheng2000/RoboPulse) is now online on Hugging Face.
 - **`2026-03-27`**: 🔥 PRM-as-a-Judge evaluation with PRM backends is now open in this repo. Start with Robo-Dopamine and try it on your own rollouts.
 - **`2026-03-23`**: 🔥 PRM-as-a-Judge blog and arXiv paper are released. See methodology, OPD definitions, and demos in the [technical blog](https://prm-as-a-judge.github.io/blog.html).
 - **`2026-03-20`**: 🔥 RoboChallenge Table30 leaderboard results are released on the [leaderboard page](https://prm-as-a-judge.github.io/leaderboard.html).
@@ -48,7 +51,7 @@ PRM-as-a-Judge deconstructs a single execution into OPD signals:
 
 ## What Makes a Model a Qualified Judge?
 
-A valid dense evaluator should satisfy two properties simultaneously: **macro-consistency** for additive, path-independent aggregation, and **micro-resolution** for distinguishing fine-grained task-relevant state changes. Under this formulation, potential-based PRM judges naturally support macro-consistency, while **RoboPulse** is introduced to empirically verify whether a judge truly has microscopic progress resolution.
+A valid dense evaluator should satisfy two properties simultaneously: **macro-consistency** for additive, path-independent aggregation, and **micro-resolution** for distinguishing fine-grained task-relevant state changes. Under this formulation, potential-based PRM judges naturally support macro-consistency, while [**RoboPulse**](https://huggingface.co/datasets/yuheng2000/RoboPulse) is introduced to empirically verify whether a judge truly has microscopic progress resolution.
 
 <table>
   <tr>
