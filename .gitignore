@@ -29,3 +29,6 @@ build/
 eval/results/*
 !eval/results/.gitkeep
 eval/**/.cache/
+eval/videos/demo_cases/set_the_plates/demo_mix/episode1_right_score10.0_id64_1_wall-oss-v0.1_frames11424.mp4
+eval/videos/demo_cases/set_the_plates/demo_mix/episode1_left_score10.0_id64_1_wall-oss-v0.1_frames11424.mp4
+eval/videos/demo_cases/set_the_plates/demo_mix/episode1_high_score10.0_id64_2_wall-oss-v0.1_frames11379.mp4
