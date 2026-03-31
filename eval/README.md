@@ -1,4 +1,4 @@
-# Eval Toolkit (Clean Version)
+# Eval Toolkit
 
 This folder contains a **minimal, reproducible evaluation toolkit** for PRM-as-a-Judge style trajectory auditing.
 
