@@ -22,6 +22,12 @@
 </p>
 
 <p align="center">
+  <a href="#wechat-community">
+    <img src="https://img.shields.io/badge/Community-Join%20WeChat%20Group-07C160?style=for-the-badge&logo=wechat&logoColor=white" alt="Join WeChat Group">
+  </a>
+</p>
+
+<p align="center">
   <img src="figs/teaser.jpeg" width="100%" alt="PRM-as-a-Judge teaser">
 </p>
 
@@ -125,9 +131,25 @@ We also welcome community PRs for stronger PRM backends, new benchmark adapters,
 
 - [x] Release project homepage, blog, and leaderboard.
 - [x] Release RoboChallenge Table30 OPD results on the online leaderboard.
+- [x] Release evaluator inference toolkit for offline trajectory scoring.
+- [x] Release standardized RoboPulse access and evaluation protocol.
 - [ ] Release a detailed analysis report for the RoboChallenge Table30 benchmark.
-- [ ] Release evaluator inference toolkit for offline trajectory scoring.
-- [ ] Release standardized RoboPulse access and evaluation protocol.
+- [ ] Propose a larger-scale trajectory-level benchmark.
+
+## WeChat Community
+
+If you'd like to discuss PRM-as-a-Judge, benchmark setup, or rollout evaluation with us, you're very welcome to join the WeChat group.
+
+<details>
+  <summary><strong>Show WeChat Group QR Code</strong></summary>
+  <br>
+  <p align="center">
+    <img src="weixin.jpg" width="320" alt="WeChat group QR code">
+  </p>
+  <p align="center">
+    <sub>Scan the QR code above to join the community chat.</sub>
+  </p>
+</details>
 
 ## Citation
 
